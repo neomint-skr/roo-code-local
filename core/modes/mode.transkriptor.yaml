@@ -1,0 +1,134 @@
+# RooCode Mode Definition - Transkriptor
+# Audio-zu-Text-Verarbeitung mit Intent-Mapping-Vorbereitung
+
+slug: "transkriptor"
+agent: "transkriptor"
+description: "Verarbeitet Audio-Dateien zu strukturierten Transkripten mit Speaker-Erkennung und Segmentierung"
+version: "1.0.0"
+
+model_source:
+  type: "local"
+  reference: "modules/llm-admin/config/active.yaml"
+
+tools:
+  - name: "sanitize"
+    type: "text_processing"
+    config:
+      remove_filler_words: true
+      normalize_punctuation: true
+      fix_encoding_issues: true
+  
+  - name: "tokenize"
+    type: "text_analysis"
+    config:
+      tokenizer_type: "sentence"
+      preserve_timestamps: true
+      language: "de"
+  
+  - name: "speakerDetect"
+    type: "audio_analysis"
+    config:
+      min_speaker_segments: 2
+      confidence_threshold: 0.8
+      speaker_labels: ["user", "agent", "system"]
+  
+  - name: "segmentBoundaries"
+    type: "text_segmentation"
+    config:
+      max_segment_length: 500
+      preserve_speaker_turns: true
+      boundary_markers: [".", "?", "!"]
+
+input_constraints:
+  file_types:
+    - "wav"
+    - "mp3"
+    - "m4a"
+    - "flac"
+  max_file_size_mb: 100
+  encoding: "utf-8"
+  sample_rate_hz: 16000
+
+output_target:
+  format: "json"
+  destination: "transcripts/"
+  naming_pattern: "{input_filename}.transcript.json"
+
+execution:
+  timeout_seconds: 300
+  retry_attempts: 2
+  parallel_processing: false
+
+integration:
+  buddy_compatible: true
+  flow_triggers:
+    - "audio_file_detected"
+    - "manual_transcription_request"
+  dependencies:
+    - "llm-admin"
+
+metadata:
+  created_on: "2025-06-28T23:20:00Z"
+  last_modified: "2025-06-28T23:20:00Z"
+  status: "active"
+
+# Transkriptor-spezifische Konfiguration
+transcription:
+  output_schema:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        speaker:
+          type: "string"
+          description: "Identifizierter Speaker (user, agent, system)"
+        text:
+          type: "string"
+          description: "Transkribierter Text des Segments"
+        timestamp:
+          type: "string"
+          format: "iso8601"
+          description: "Zeitstempel des Segments"
+        turn_id:
+          type: "string"
+          description: "Eindeutige Turn-ID für Intent-Mapping"
+        confidence:
+          type: "number"
+          description: "Konfidenz der Transkription (0.0-1.0)"
+        segment_boundaries:
+          type: "object"
+          properties:
+            start_time: 
+              type: "number"
+              description: "Startzeit in Sekunden"
+            end_time:
+              type: "number"
+              description: "Endzeit in Sekunden"
+
+  processing_pipeline:
+    - step: "audio_preprocessing"
+      description: "Normalisierung und Rauschunterdrückung"
+    - step: "speech_to_text"
+      description: "Haupttranskription mit LLM"
+    - step: "speaker_diarization"
+      description: "Speaker-Erkennung und -Zuordnung"
+    - step: "text_sanitization"
+      description: "Bereinigung und Normalisierung"
+    - step: "segmentation"
+      description: "Turn-basierte Segmentierung"
+    - step: "output_formatting"
+      description: "JSON-Strukturierung für Intent-Mapping"
+
+# Qualitätssicherung
+quality_assurance:
+  min_confidence_threshold: 0.7
+  max_processing_time_minutes: 5
+  required_output_fields:
+    - "speaker"
+    - "text"
+    - "timestamp"
+    - "turn_id"
+  validation_rules:
+    - "no_empty_text_segments"
+    - "valid_timestamp_format"
+    - "speaker_consistency"

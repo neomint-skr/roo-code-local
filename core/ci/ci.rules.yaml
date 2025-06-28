@@ -1,0 +1,89 @@
+# CI-Validierungsregeln für RooCode Local Agent System
+# Definiert alle Regeln und Abhängigkeiten für automatisierte Strukturprüfung
+
+validation_rules:
+  yaml_structure:
+    - rule_id: "yaml_syntax"
+      description: "Prüft YAML-Syntax und Parsbarkeit"
+      applies_to: "*.yaml"
+      severity: "error"
+      
+    - rule_id: "template_conformity"
+      description: "Prüft Konformität mit entsprechendem Template"
+      applies_to: 
+        - "mode.*.yaml -> template.mode.yaml"
+        - "spec.*.yaml -> template.spec.yaml"
+        - "vocab.yaml -> template.vocab-entry.yaml"
+        - "buddy-flows.yaml -> template.buddy-flows.yaml"
+      severity: "error"
+
+  referential_integrity:
+    - rule_id: "mode_spec_consistency"
+      description: "Jede spec.*.yaml muss einen existierenden Mode referenzieren"
+      check: "spec.agent_id exists in mode.*.slug"
+      severity: "error"
+      
+    - rule_id: "intent_mapping_consistency"
+      description: "Alle intent_id in *.mapped.json müssen in vocab.yaml existieren"
+      check: "mapped.intent_id exists in vocab.yaml.id"
+      severity: "error"
+      
+    - rule_id: "vocab_history_consistency"
+      description: "Alle Einträge in vocab.history.yaml müssen passendes Vokabel haben"
+      check: "vocab.history.id exists in vocab.yaml.id"
+      severity: "error"
+      
+    - rule_id: "buddy_flows_mode_consistency"
+      description: "Alle buddy-flows.yaml Modes müssen existieren"
+      check: "buddy-flows.steps.mode exists in mode.*.slug"
+      severity: "error"
+
+  data_ordering:
+    - rule_id: "vocab_alphabetical"
+      description: "vocab.yaml Einträge müssen alphabetisch nach ID sortiert sein"
+      check: "vocab.yaml.id is_sorted_alphabetically"
+      severity: "warning"
+      
+    - rule_id: "history_chronological"
+      description: "vocab.history.yaml Einträge müssen chronologisch sortiert sein"
+      check: "vocab.history.yaml.created_on is_sorted_chronologically"
+      severity: "warning"
+
+  required_fields:
+    - rule_id: "mandatory_fields"
+      description: "Alle REQUIRED_* Felder aus Templates müssen vorhanden sein"
+      check: "template_required_fields_present"
+      severity: "error"
+      
+    - rule_id: "field_types"
+      description: "Feldtypen müssen Template-Spezifikation entsprechen"
+      check: "field_types_match_template"
+      severity: "error"
+
+subsystem_validation:
+  vocab:
+    files: ["vocab.yaml", "vocab.history.yaml"]
+    rules: ["yaml_syntax", "template_conformity", "vocab_alphabetical", "history_chronological"]
+    
+  modes:
+    files: ["mode.*.yaml", "spec.*.yaml"]
+    rules: ["yaml_syntax", "template_conformity", "mode_spec_consistency"]
+    
+  flows:
+    files: ["buddy-flows.yaml"]
+    rules: ["yaml_syntax", "template_conformity", "buddy_flows_mode_consistency"]
+    
+  mappings:
+    files: ["*.mapped.json"]
+    rules: ["intent_mapping_consistency"]
+
+output_configuration:
+  log_file: "ci.log.yaml"
+  summary_file: "ci.summary.yaml"
+  error_format:
+    - "error_type"
+    - "affected_file"
+    - "yaml_path"
+    - "expected_value"
+    - "actual_value"
+    - "line_number"

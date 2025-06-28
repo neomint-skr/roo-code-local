@@ -1,0 +1,39 @@
+# Template für Buddy-Flow-Definitionen (buddy-flows.yaml)
+# Definiert die Mindeststruktur für Ablaufdefinitionen
+
+flow_id: "REQUIRED_STRING"
+name: "REQUIRED_STRING"
+description: "REQUIRED_STRING"
+version: "REQUIRED_SEMVER"
+
+trigger:
+  type: "REQUIRED_STRING"  # file, event, schedule, manual
+  condition: "REQUIRED_STRING"
+  parameters: "OPTIONAL_OBJECT"
+
+steps:
+  - step_id: "REQUIRED_STRING"
+    mode: "REQUIRED_STRING"  # Referenz auf mode.*.yaml
+    input_source: "REQUIRED_STRING"
+    output_target: "REQUIRED_STRING"
+    timeout_seconds: "REQUIRED_INTEGER"
+    retry_on_failure: "REQUIRED_BOOLEAN"
+    dependencies:
+      - "OPTIONAL_LIST_OF_STRINGS"
+
+error_handling:
+  default_action: "REQUIRED_STRING"  # retry, skip, abort
+  max_retries: "REQUIRED_INTEGER"
+  notification: "OPTIONAL_STRING"
+
+monitoring:
+  log_level: "REQUIRED_STRING"
+  metrics_collection: "REQUIRED_BOOLEAN"
+  status_reporting: "REQUIRED_STRING"
+
+metadata:
+  created_on: "REQUIRED_ISO8601_TIMESTAMP"
+  last_modified: "REQUIRED_ISO8601_TIMESTAMP"
+  author: "REQUIRED_STRING"
+  tags:
+    - "OPTIONAL_LIST_OF_STRINGS"

@@ -1,0 +1,44 @@
+# Template für Mode-Definitionen (mode.*.yaml)
+# Definiert die Mindeststruktur für alle RooCode-Mode-Dateien
+
+slug: "REQUIRED_STRING"
+agent: "REQUIRED_STRING"
+description: "REQUIRED_STRING"
+version: "REQUIRED_SEMVER"
+
+model_source:
+  type: "REQUIRED_STRING"  # z.B. "local", "api", "registry"
+  reference: "REQUIRED_STRING"  # Pfad oder ID
+
+tools:
+  - name: "REQUIRED_STRING"
+    type: "REQUIRED_STRING"
+    config: "OPTIONAL_OBJECT"
+
+input_constraints:
+  file_types:
+    - "REQUIRED_LIST_OF_STRINGS"
+  max_file_size_mb: "REQUIRED_INTEGER"
+  encoding: "REQUIRED_STRING"
+
+output_target:
+  format: "REQUIRED_STRING"
+  destination: "REQUIRED_STRING"
+  naming_pattern: "REQUIRED_STRING"
+
+execution:
+  timeout_seconds: "REQUIRED_INTEGER"
+  retry_attempts: "REQUIRED_INTEGER"
+  parallel_processing: "REQUIRED_BOOLEAN"
+
+integration:
+  buddy_compatible: "REQUIRED_BOOLEAN"
+  flow_triggers:
+    - "OPTIONAL_LIST_OF_STRINGS"
+  dependencies:
+    - "OPTIONAL_LIST_OF_STRINGS"
+
+metadata:
+  created_on: "REQUIRED_ISO8601_TIMESTAMP"
+  last_modified: "REQUIRED_ISO8601_TIMESTAMP"
+  status: "REQUIRED_STRING"  # active, deprecated, experimental

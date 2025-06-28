@@ -1,0 +1,26 @@
+# Template für Intent-Vorschläge (intent-scout/suggestions/*.yaml)
+# Definiert die Mindeststruktur für Intent-Scout-Vorschlagsdateien
+
+suggested_id: "REQUIRED_STRING"  # z.B. "inform.uncategorized.03"
+label: "REQUIRED_STRING"  # Intuitive Kurzbeschreibung
+explanation: "REQUIRED_STRING"  # Warum dieser Turn als eigenständig gewertet wird
+source_turn: "REQUIRED_STRING"  # Verweis auf Originaleintrag (speaker:index)
+
+context:
+  transcript_file: "REQUIRED_STRING"
+  turn_index: "REQUIRED_INTEGER"
+  speaker: "REQUIRED_STRING"
+  timestamp: "OPTIONAL_STRING"
+
+analysis:
+  confidence_score: "OPTIONAL_FLOAT"
+  similar_intents:
+    - "OPTIONAL_LIST_OF_STRINGS"
+  linguistic_features:
+    - "OPTIONAL_LIST_OF_STRINGS"
+
+metadata:
+  created_on: "REQUIRED_ISO8601_TIMESTAMP"
+  scout_version: "REQUIRED_STRING"
+  status: "REQUIRED_STRING"  # pending, approved, rejected
+  reviewer: "OPTIONAL_STRING"

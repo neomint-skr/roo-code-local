@@ -1,0 +1,16 @@
+# Template für Vokabel-Einträge (vocab.yaml)
+# Definiert die Mindeststruktur für Intent-Vokabular-Einträge
+
+id: "REQUIRED_STRING"  # z.B. "inform.question", "confirm.approval"
+label: "REQUIRED_STRING"  # Menschlich verständlicher Kurzname
+description: "OPTIONAL_STRING"  # Semantische Abgrenzung
+created_on: "REQUIRED_ISO8601_TIMESTAMP"
+origin: "REQUIRED_STRING"  # manuell, Agent, Datei
+
+# Zusätzliche Metadaten für erweiterte Vokabel-Einträge
+category: "OPTIONAL_STRING"
+confidence_threshold: "OPTIONAL_FLOAT"
+examples:
+  - "OPTIONAL_LIST_OF_STRINGS"
+related_intents:
+  - "OPTIONAL_LIST_OF_STRINGS"

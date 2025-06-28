@@ -1,0 +1,46 @@
+# Template für LLM-Konfiguration (llm.config.yaml)
+# Definiert die Mindeststruktur für lokale LLM-Eigenschaften
+
+model:
+  name: "REQUIRED_STRING"
+  path: "REQUIRED_STRING"
+  family: "REQUIRED_STRING"  # llama, mistral, gpt, etc.
+  quantization: "OPTIONAL_STRING"
+  tokenizer: "REQUIRED_STRING"
+
+engine:
+  type: "REQUIRED_STRING"  # gguf, transformers, llama-cpp, vllm
+  executable_path: "OPTIONAL_STRING"
+  parameters:
+    - "REQUIRED_LIST_OF_STRINGS"
+
+context:
+  max_tokens: "REQUIRED_INTEGER"
+  window_size: "REQUIRED_INTEGER"
+  padding: "OPTIONAL_INTEGER"
+  stop_sequences:
+    - "OPTIONAL_LIST_OF_STRINGS"
+
+performance:
+  thread_count: "REQUIRED_INTEGER"
+  gpu_layers: "OPTIONAL_INTEGER"
+  batch_size: "REQUIRED_INTEGER"
+  warmup_iterations: "OPTIONAL_INTEGER"
+
+interface:
+  api_port: "OPTIONAL_INTEGER"
+  router_slug: "OPTIONAL_STRING"
+  socket_mode: "OPTIONAL_BOOLEAN"
+  endpoint_prefix: "OPTIONAL_STRING"
+
+defaults:
+  temperature: "REQUIRED_FLOAT"
+  top_k: "REQUIRED_INTEGER"
+  top_p: "REQUIRED_FLOAT"
+  seed: "OPTIONAL_INTEGER"
+  repeat_penalty: "REQUIRED_FLOAT"
+  eos_behavior: "REQUIRED_STRING"
+
+profiles:
+  default: "REQUIRED_OBJECT"
+  # Weitere Profile als separate Objekte

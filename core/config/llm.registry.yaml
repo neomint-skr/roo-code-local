@@ -1,0 +1,121 @@
+# RooCode LLM Model Registry
+# Zentrale Registrierung aller verfügbaren lokalen LLM-Modelle
+
+models:
+  mistral-7b-instruct:
+    id: "mistral-7b-instruct"
+    name: "Mistral 7B Instruct v0.2"
+    family: "mistral"
+    size: "7B"
+    quantization: "Q4_K_M"
+    file_path: "models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+    file_size_gb: 4.1
+    context_length: 32768
+    recommended_ram_gb: 8
+    engine_compatibility:
+      - "llama-cpp"
+      - "transformers"
+    api_server: true
+    api_config:
+      default_port: 8080
+      endpoint_prefix: "/v1"
+      supported_endpoints:
+        - "/v1/completions"
+        - "/v1/chat/completions"
+        - "/completion"
+      auth_required: false
+      local_mode_key: "local-mode-key"
+    status: "available"
+    metadata:
+      download_url: "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+      license: "Apache 2.0"
+      created_on: "2025-06-28T23:00:00Z"
+      last_verified: "2025-06-28T23:00:00Z"
+
+  llama2-7b-chat:
+    id: "llama2-7b-chat"
+    name: "Llama 2 7B Chat"
+    family: "llama"
+    size: "7B"
+    quantization: "Q4_K_M"
+    file_path: "models/llama-2-7b-chat.Q4_K_M.gguf"
+    file_size_gb: 3.8
+    context_length: 4096
+    recommended_ram_gb: 8
+    engine_compatibility:
+      - "llama-cpp"
+      - "transformers"
+    api_server: true
+    status: "not_downloaded"
+    metadata:
+      download_url: "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF"
+      license: "Custom (Llama 2)"
+      created_on: "2025-06-28T23:00:00Z"
+      last_verified: "2025-06-28T23:00:00Z"
+
+  codellama-7b-instruct:
+    id: "codellama-7b-instruct"
+    name: "Code Llama 7B Instruct"
+    family: "llama"
+    size: "7B"
+    quantization: "Q4_K_M"
+    file_path: "models/codellama-7b-instruct.Q4_K_M.gguf"
+    file_size_gb: 3.8
+    context_length: 16384
+    recommended_ram_gb: 8
+    engine_compatibility:
+      - "llama-cpp"
+      - "transformers"
+    api_server: true
+    status: "not_downloaded"
+    metadata:
+      download_url: "https://huggingface.co/TheBloke/CodeLlama-7B-Instruct-GGUF"
+      license: "Custom (Llama 2)"
+      created_on: "2025-06-28T23:00:00Z"
+      last_verified: "2025-06-28T23:00:00Z"
+
+engines:
+  llama-cpp:
+    id: "llama-cpp"
+    name: "llama.cpp"
+    version: "b1696"
+    executable_path: "engines/llama-cpp/main.exe"
+    supported_formats:
+      - "gguf"
+      - "ggml"
+    api_server_support: true
+    gpu_acceleration: true
+    status: "available"
+    
+  transformers:
+    id: "transformers"
+    name: "Hugging Face Transformers"
+    version: "4.35.2"
+    python_package: "transformers"
+    supported_formats:
+      - "safetensors"
+      - "pytorch"
+    api_server_support: false
+    gpu_acceleration: true
+    status: "available"
+
+# Registry metadata
+registry_info:
+  version: "1.0.0"
+  last_updated: "2025-06-28T23:00:00Z"
+  total_models: 3
+  available_models: 1
+  total_engines: 2
+  
+# Default selections
+defaults:
+  primary_model: "mistral-7b-instruct"
+  primary_engine: "llama-cpp"
+  fallback_model: "mistral-7b-instruct"
+  
+# Model recommendations by use case
+recommendations:
+  general_chat: "mistral-7b-instruct"
+  code_generation: "codellama-7b-instruct"
+  transcription: "mistral-7b-instruct"
+  intent_classification: "mistral-7b-instruct"

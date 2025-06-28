@@ -1,0 +1,103 @@
+# RooCode Buddy Profile Configuration
+# Parametrisierte Startdefinition für den zentralen buddy-Mode
+
+profile: "buddy"
+mode: "buddy"
+model: "mistral"  # Wird automatisch aus active.yaml übernommen
+api_key: "local-mode-key"
+
+# Startup-Konfiguration
+startup_check: true
+log_level: "INFO"
+auto_start_api: true
+auto_start_gui: true
+
+# Buddy-spezifische Einstellungen
+buddy_config:
+  coordination_mode: true
+  flow_management: true
+  agent_orchestration: true
+  intent_processing: true
+  
+  # Verfügbare Agenten für Buddy-Koordination
+  available_agents:
+    - "transkriptor"
+    - "intent-mapper"
+    - "intent-scout"
+    - "vocab-updater"
+  
+  # Standard-Workflows
+  default_workflows:
+    - "audio_to_intent_mapping"
+    - "vocabulary_management"
+    - "transcript_processing"
+
+# API-Konfiguration
+api_config:
+  endpoint: "http://127.0.0.1:8080"
+  timeout_seconds: 30
+  retry_attempts: 3
+  
+  # Buddy-spezifische API-Einstellungen
+  buddy_endpoints:
+    coordination: "/v1/buddy/coordinate"
+    status: "/v1/buddy/status"
+    workflow: "/v1/buddy/workflow"
+
+# RooCode-Integration
+roocode_config:
+  mode_file: "core/modes/mode.buddy.yaml"
+  profile_validation: true
+  gui_startup: true
+  
+  # Buddy-Mode-Parameter für RooCode
+  mode_parameters:
+    temperature: 0.7
+    max_tokens: 2048
+    context_window: 4096
+    
+# Logging und Monitoring
+logging:
+  level: "INFO"
+  file: "logs/buddy.log"
+  rotation: true
+  max_size_mb: 10
+  
+monitoring:
+  health_check_interval: 60
+  performance_metrics: true
+  workflow_tracking: true
+
+# Validierung und Qualitätssicherung
+validation:
+  schema_version: "1.0.0"
+  required_components:
+    - "llm_api_server"
+    - "buddy_mode_definition"
+    - "active_model_config"
+  
+  startup_checks:
+    - "api_server_reachable"
+    - "model_loaded"
+    - "buddy_mode_available"
+    - "required_agents_present"
+
+# Metadaten
+metadata:
+  created_on: "2025-06-28T23:30:00Z"
+  version: "1.0.0"
+  description: "Buddy profile for centralized agent coordination"
+  author: "roocode-system"
+  
+# Kompatibilität
+compatibility:
+  roocode_version: ">=1.0.0"
+  system_requirements:
+    - "Windows 11 Pro"
+    - "PowerShell 5.1+"
+    - "Python 3.11+"
+  
+  dependencies:
+    - "llm-admin module"
+    - "core templates"
+    - "ci validation"

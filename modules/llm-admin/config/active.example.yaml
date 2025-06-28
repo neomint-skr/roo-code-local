@@ -1,0 +1,36 @@
+# Beispiel für active.yaml - Wird automatisch durch CLI erstellt
+# NICHT MANUELL BEARBEITEN - Verwende 'llm use <model-id>' stattdessen
+
+active_model: "mistral-7b-instruct"
+engine: "llama-cpp"
+path: "models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+
+params:
+  model_name: "Mistral 7B Instruct v0.2"
+  family: "mistral"
+  quantization: "Q4_K_M"
+  context_length: 32768
+
+engine_config:
+  executable_path: "engines/llama-cpp/main.exe"
+  version: "b1696"
+  api_server_support: true
+
+# API-Server-Konfiguration
+api_config:
+  api_url: "http://127.0.0.1:8080"
+  api_key: "local-mode-key"
+  model_format: "gguf"
+  tokenizer: "mistral"
+  endpoints:
+    completion: "/completion"
+    chat: "/v1/chat/completions"
+  server_mode: true
+
+# Optionale Konfiguration für Chat-Modelle
+default_prompt: "[INST] {user_input} [/INST]"
+system_message: "You are a helpful AI assistant."
+
+# Automatisch generierte Metadaten
+timestamp: "2025-06-28T23:15:00Z"
+set_by: "llm-cli"

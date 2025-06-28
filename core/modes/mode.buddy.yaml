@@ -1,0 +1,159 @@
+# RooCode Mode Definition - Buddy
+# Zentraler Koordinations-Agent für Workflow-Management und Agenten-Orchestrierung
+
+slug: "buddy"
+agent: "buddy"
+description: "Zentraler Koordinations-Agent für deterministische Workflow-Ausführung und Agenten-Management"
+version: "1.0.0"
+
+model_source:
+  type: "local"
+  reference: "modules/llm-admin/config/active.yaml"
+
+tools:
+  - name: "coordinate"
+    type: "workflow_management"
+    config:
+      orchestration_mode: true
+      agent_discovery: true
+      flow_validation: true
+  
+  - name: "monitor"
+    type: "system_monitoring"
+    config:
+      health_checks: true
+      performance_tracking: true
+      error_detection: true
+  
+  - name: "validate"
+    type: "quality_assurance"
+    config:
+      schema_validation: true
+      data_consistency: true
+      workflow_integrity: true
+  
+  - name: "schedule"
+    type: "task_scheduling"
+    config:
+      priority_management: true
+      dependency_resolution: true
+      resource_allocation: true
+
+input_constraints:
+  file_types:
+    - "yaml"
+    - "json"
+    - "txt"
+  max_file_size_mb: 50
+  encoding: "utf-8"
+
+output_target:
+  format: "json"
+  destination: "workflows/"
+  naming_pattern: "{workflow_id}.result.json"
+
+execution:
+  timeout_seconds: 600
+  retry_attempts: 3
+  parallel_processing: true
+
+integration:
+  buddy_compatible: true
+  flow_triggers:
+    - "workflow_request"
+    - "agent_coordination_needed"
+    - "system_health_check"
+  dependencies:
+    - "llm-admin"
+    - "all-agents"
+
+# Buddy-spezifische Konfiguration
+coordination:
+  managed_agents:
+    - slug: "transkriptor"
+      priority: "high"
+      auto_start: true
+    - slug: "intent-mapper"
+      priority: "high"
+      auto_start: true
+    - slug: "intent-scout"
+      priority: "medium"
+      auto_start: false
+    - slug: "vocab-updater"
+      priority: "medium"
+      auto_start: false
+  
+  workflow_patterns:
+    audio_processing:
+      steps:
+        - agent: "transkriptor"
+          input: "audio_file"
+          output: "transcript.json"
+        - agent: "intent-mapper"
+          input: "transcript.json"
+          output: "mapped.json"
+        - agent: "intent-scout"
+          input: "mapped.json"
+          output: "suggestions.yaml"
+        - agent: "vocab-updater"
+          input: "suggestions.yaml"
+          output: "vocab.yaml"
+    
+    vocabulary_management:
+      steps:
+        - agent: "vocab-updater"
+          input: "suggestions.yaml"
+          output: "vocab.yaml"
+        - validation: "ci-validation"
+          input: "vocab.yaml"
+          output: "validation.report"
+
+# API-Integration
+api_integration:
+  api_key_required: true
+  api_key_hint: "Use 'local-mode-key' for trusted local access"
+  endpoints:
+    coordination: "/v1/buddy/coordinate"
+    status: "/v1/buddy/status"
+    workflow: "/v1/buddy/workflow"
+    agents: "/v1/buddy/agents"
+
+# Monitoring und Logging
+monitoring:
+  health_check_interval: 30
+  metrics_collection:
+    - "workflow_completion_time"
+    - "agent_response_time"
+    - "error_rate"
+    - "resource_utilization"
+  
+  alerts:
+    - condition: "agent_timeout"
+      action: "restart_agent"
+    - condition: "workflow_failure"
+      action: "notify_admin"
+    - condition: "api_server_down"
+      action: "restart_server"
+
+# Qualitätssicherung
+quality_assurance:
+  validation_rules:
+    - "workflow_schema_compliance"
+    - "agent_output_validation"
+    - "data_consistency_check"
+    - "performance_threshold_check"
+  
+  error_handling:
+    default_action: "retry"
+    max_retries: 3
+    escalation_policy: "notify_and_halt"
+  
+  performance_targets:
+    max_workflow_time_minutes: 10
+    min_success_rate_percent: 95
+    max_memory_usage_mb: 1024
+
+metadata:
+  created_on: "2025-06-28T23:30:00Z"
+  last_modified: "2025-06-28T23:30:00Z"
+  status: "active"

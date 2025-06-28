@@ -1,0 +1,109 @@
+# RooCode Local LLM Configuration
+# Definiert sämtliche lokalen LLM-Eigenschaften für deterministische Agenten-Ausführung
+
+model:
+  name: "mistral-7b-instruct"
+  path: "models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+  family: "mistral"
+  quantization: "Q4_K_M"
+  tokenizer: "mistral"
+
+engine:
+  type: "llama-cpp"
+  executable_path: "engines/llama-cpp/main.exe"
+  parameters:
+    - "--model"
+    - "{model_path}"
+    - "--ctx-size"
+    - "{context_size}"
+    - "--threads"
+    - "{thread_count}"
+    - "--n-gpu-layers"
+    - "{gpu_layers}"
+
+context:
+  max_tokens: 4096
+  window_size: 4096
+  padding: 128
+  stop_sequences:
+    - "</s>"
+    - "[INST]"
+    - "[/INST]"
+
+performance:
+  thread_count: 8
+  gpu_layers: 32
+  batch_size: 512
+  warmup_iterations: 3
+
+interface:
+  api_port: 8080
+  router_slug: "local-llm"
+  socket_mode: false
+  endpoint_prefix: "/v1"
+
+defaults:
+  temperature: 0.7
+  top_k: 40
+  top_p: 0.9
+  seed: -1
+  repeat_penalty: 1.1
+  eos_behavior: "stop"
+
+profiles:
+  default:
+    model:
+      name: "mistral-7b-instruct"
+      path: "models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+    performance:
+      thread_count: 8
+      gpu_layers: 32
+    defaults:
+      temperature: 0.7
+      top_k: 40
+      top_p: 0.9
+  
+  transkriptor:
+    model:
+      name: "mistral-7b-instruct"
+      path: "models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+    performance:
+      thread_count: 6
+      gpu_layers: 24
+    defaults:
+      temperature: 0.3
+      top_k: 20
+      top_p: 0.8
+    context:
+      max_tokens: 2048
+  
+  generator_optimized:
+    model:
+      name: "mistral-7b-instruct"
+      path: "models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+    performance:
+      thread_count: 12
+      gpu_layers: 40
+      batch_size: 1024
+    defaults:
+      temperature: 0.9
+      top_k: 60
+      top_p: 0.95
+    context:
+      max_tokens: 8192
+
+# Validation metadata
+validation:
+  schema_version: "1.0.0"
+  last_validated: "2025-06-28T23:00:00Z"
+  validator: "template_validator.py"
+  
+# Profile selection logic
+profile_selection:
+  mode_mapping:
+    transkriptor: "transkriptor"
+    buddy: "default"
+    intent-mapper: "transkriptor"
+    intent-scout: "default"
+    vocab-updater: "default"
+  fallback_profile: "default"

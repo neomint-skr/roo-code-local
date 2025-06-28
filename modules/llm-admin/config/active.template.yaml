@@ -1,0 +1,25 @@
+# Template für active.yaml - Aktuell ausgewählter Modellzustand
+# Diese Datei wird automatisch durch 'llm use <model-id>' erstellt und verwaltet
+
+active_model: "REQUIRED_STRING"  # ID des aktiven Modells aus Registry
+engine: "REQUIRED_STRING"        # Engine-ID (llama-cpp, transformers, etc.)
+path: "REQUIRED_STRING"          # Relativer Pfad zur Modelldatei
+
+params:
+  model_name: "REQUIRED_STRING"      # Vollständiger Modellname
+  family: "REQUIRED_STRING"          # Modellfamilie (mistral, llama, etc.)
+  quantization: "OPTIONAL_STRING"    # Quantisierungstyp (Q4_K_M, etc.)
+  context_length: "REQUIRED_INTEGER" # Maximale Kontextlänge
+
+engine_config:
+  executable_path: "REQUIRED_STRING"    # Pfad zur Engine-Executable
+  version: "OPTIONAL_STRING"            # Engine-Version
+  api_server_support: "REQUIRED_BOOLEAN" # Unterstützt API-Server
+
+# Optionale Felder für erweiterte Konfiguration
+default_prompt: "OPTIONAL_STRING"     # Standard-Prompt-Template
+system_message: "OPTIONAL_STRING"     # System-Message für Chat-Modelle
+
+# Metadaten
+timestamp: "REQUIRED_ISO8601_TIMESTAMP"  # Zeitpunkt der letzten Aktualisierung
+set_by: "OPTIONAL_STRING"                # CLI oder Agent, der die Konfiguration gesetzt hat

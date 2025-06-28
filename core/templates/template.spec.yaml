@@ -1,0 +1,41 @@
+# Template für Agenten-Spezifikationen (spec.*.yaml)
+# Definiert die Mindeststruktur für alle Agenten-Spezifikationsdateien
+
+agent_id: "REQUIRED_STRING"
+name: "REQUIRED_STRING"
+description: "REQUIRED_STRING"
+version: "REQUIRED_SEMVER"
+
+capabilities:
+  input_types: 
+    - "REQUIRED_LIST_OF_STRINGS"
+  output_types:
+    - "REQUIRED_LIST_OF_STRINGS"
+  tools:
+    - "REQUIRED_LIST_OF_STRINGS"
+
+configuration:
+  model_requirements:
+    min_context_length: "REQUIRED_INTEGER"
+    recommended_model_size: "REQUIRED_STRING"
+  performance:
+    max_processing_time: "REQUIRED_INTEGER"
+    memory_limit_mb: "REQUIRED_INTEGER"
+
+dependencies:
+  required_modules: 
+    - "REQUIRED_LIST_OF_STRINGS"
+  optional_modules:
+    - "OPTIONAL_LIST_OF_STRINGS"
+
+validation:
+  input_schema: "REQUIRED_STRING"
+  output_schema: "REQUIRED_STRING"
+  test_cases: "REQUIRED_STRING"
+
+metadata:
+  created_on: "REQUIRED_ISO8601_TIMESTAMP"
+  last_modified: "REQUIRED_ISO8601_TIMESTAMP"
+  author: "REQUIRED_STRING"
+  tags:
+    - "OPTIONAL_LIST_OF_STRINGS"
