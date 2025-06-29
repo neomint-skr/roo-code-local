@@ -1,0 +1,293 @@
+# RooCode Agent Specification - Intent Mapper
+# Detailed specification for intent classification agent
+# Version: 1.0
+# Created: 2025-06-29
+
+specification:
+  agent_name: "intent-mapper"
+  version: "1.0.0"
+  description: "Maps transcript turns to predefined intents from vocabulary using semantic analysis"
+  
+  # Input specifications
+  input_requirements:
+    primary_input:
+      file_format: ".transcript.json"
+      description: "Validated transcript from validator agent"
+      required_structure: "array_of_turn_objects"
+    
+    vocabulary_input:
+      file_path: "core/vocab/vocab.yaml"
+      description: "Central intent vocabulary"
+      required_structure: "intents_array"
+      validation_required: true
+    
+    file_constraints:
+      max_transcript_size_mb: 25
+      max_vocab_size_mb: 5
+      encoding: "utf-8"
+      min_turns: 1
+      max_turns: 5000
+
+  # Vocabulary specifications
+  vocabulary_requirements:
+    structure:
+      required_fields:
+        - name: "intents"
+          type: "array"
+          items: "intent_object"
+    
+    intent_object:
+      required_fields:
+        - name: "id"
+          type: "string"
+          pattern: "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$"
+        - name: "label"
+          type: "string"
+          min_length: 1
+        - name: "description"
+          type: "string"
+          nullable: true
+        - name: "created_on"
+          type: "string"
+          format: "iso8601"
+        - name: "origin"
+          type: "string"
+    
+    validation_rules:
+      unique_ids: true
+      valid_id_format: true
+      no_empty_labels: true
+      valid_timestamps: true
+
+  # Processing specifications
+  processing_workflow:
+    steps:
+      1: "load_vocabulary"
+      2: "validate_vocabulary"
+      3: "load_transcript"
+      4: "validate_transcript"
+      5: "initialize_classifier"
+      6: "process_turns"
+      7: "generate_mappings"
+      8: "validate_output"
+      9: "save_results"
+    
+    classification_algorithm:
+      primary_method: "semantic_similarity"
+      fallback_method: "keyword_matching"
+      confidence_threshold: 0.7
+      max_candidates: 3
+    
+    turn_processing:
+      process_all_turns: true
+      skip_system_turns: false
+      preserve_turn_order: true
+      maintain_references: true
+
+  # Classification specifications
+  classification_rules:
+    mapping_constraints:
+      one_intent_per_turn: true
+      no_modification_of_original: true
+      explicit_null_for_unmapped: true
+      preserve_turn_references: true
+    
+    confidence_handling:
+      minimum_confidence: 0.7
+      include_confidence_score: true
+      confidence_decimal_places: 3
+      no_mapping_below_threshold: true
+    
+    intent_selection:
+      highest_confidence_wins: true
+      tie_breaking: "alphabetical_id"
+      no_random_selection: true
+      deterministic_results: true
+
+  # Output specifications
+  output_requirements:
+    file_format: "json"
+    naming_pattern: "{input_filename}.mapped.json"
+    encoding: "utf-8"
+    
+    structure:
+      type: "array"
+      items:
+        type: "object"
+        required_fields:
+          - name: "turn_ref"
+            type: "string"
+            format: "speaker:index"
+            description: "Reference to original turn"
+          - name: "intent_id"
+            type: "string"
+            nullable: true
+            description: "Mapped intent ID from vocabulary"
+          - name: "confidence"
+            type: "number"
+            nullable: true
+            minimum: 0.0
+            maximum: 1.0
+            description: "Classification confidence score"
+        
+        optional_fields:
+          - name: "candidates"
+            type: "array"
+            description: "Alternative intent candidates"
+          - name: "metadata"
+            type: "object"
+            description: "Additional classification metadata"
+    
+    validation_rules:
+      - "All turn_ref values reference valid transcript turns"
+      - "All intent_id values exist in vocabulary or are null"
+      - "Confidence values are valid floats between 0.0 and 1.0"
+      - "No duplicate turn_ref values"
+
+  # Quality assurance
+  validation_criteria:
+    accuracy:
+      - "Intent mapping accuracy > 85% for clear intents"
+      - "No false mappings (confidence threshold respected)"
+      - "Consistent results for identical input"
+      - "All vocabulary intents properly referenced"
+    
+    completeness:
+      - "All transcript turns processed"
+      - "All mappings include confidence scores"
+      - "Turn references accurately maintained"
+      - "Output format strictly conformant"
+    
+    consistency:
+      - "Same turn produces same mapping"
+      - "Vocabulary changes reflected in mappings"
+      - "Deterministic classification results"
+      - "No mapping conflicts or contradictions"
+
+  # Error handling
+  error_handling:
+    vocabulary_errors:
+      missing_file: "fail_with_error"
+      invalid_format: "fail_with_error"
+      empty_vocabulary: "fail_with_error"
+      duplicate_ids: "fail_with_error"
+    
+    transcript_errors:
+      missing_file: "fail_with_error"
+      invalid_format: "fail_with_error"
+      empty_transcript: "fail_with_error"
+      validation_failed: "fail_with_error"
+    
+    processing_errors:
+      classification_failure: "log_and_continue"
+      low_confidence: "map_as_null"
+      unknown_intent: "fail_with_error"
+      output_generation_failed: "fail_with_error"
+
+  # Performance specifications
+  performance_requirements:
+    processing_time:
+      max_seconds_per_turn: 2
+      max_total_seconds: 300
+    
+    memory_usage:
+      max_mb_vocabulary: 50
+      max_mb_transcript: 100
+      streaming_threshold: 1000
+    
+    throughput:
+      max_concurrent_files: 3
+      batch_processing: false
+      parallel_turn_processing: false
+
+  # Integration specifications
+  integration_points:
+    input_sources:
+      - "data/output/*.transcript.json"
+      - "data/transcripts/*.transcript.json"
+    
+    vocabulary_source:
+      - "core/vocab/vocab.yaml"
+    
+    output_destinations:
+      - "data/mappings/{filename}.mapped.json"
+    
+    previous_agents:
+      - "validator"
+    
+    next_agents:
+      - "intent-discovery"
+    
+    dependencies:
+      required: ["vocab.yaml"]
+      optional: ["llm-admin"]
+
+  # Configuration parameters
+  configuration:
+    classification:
+      algorithm: "semantic_similarity"
+      confidence_threshold: 0.7
+      include_candidates: false
+      max_candidates: 3
+    
+    vocabulary:
+      cache_enabled: true
+      reload_on_change: true
+      validation_strict: true
+    
+    output:
+      include_metadata: false
+      pretty_print: true
+      backup_enabled: false
+
+  # Monitoring and logging
+  monitoring:
+    metrics:
+      - "turns_processed_count"
+      - "intents_mapped_count"
+      - "unmapped_turns_count"
+      - "average_confidence_score"
+      - "processing_time_seconds"
+    
+    logging:
+      level: "INFO"
+      include_confidence_scores: true
+      include_unmapped_turns: true
+    
+    alerts:
+      - condition: "unmapped_rate > 0.5"
+        action: "log_warning"
+      - condition: "processing_time > 300s"
+        action: "log_error"
+
+  # Testing specifications
+  testing:
+    unit_tests:
+      - "test_vocabulary_loading"
+      - "test_intent_classification"
+      - "test_confidence_calculation"
+      - "test_output_generation"
+      - "test_error_handling"
+    
+    integration_tests:
+      - "test_validator_output_processing"
+      - "test_vocabulary_updates"
+      - "test_large_transcript_processing"
+    
+    test_data:
+      vocabularies:
+        - "minimal_vocab.yaml"
+        - "comprehensive_vocab.yaml"
+        - "edge_case_vocab.yaml"
+      
+      transcripts:
+        - "clear_intents.transcript.json"
+        - "ambiguous_intents.transcript.json"
+        - "no_matching_intents.transcript.json"
+
+# Compliance validation
+compliance:
+  roocode_standards: true
+  template_conformity: true
+  ci_validation: true
+  documentation_complete: true

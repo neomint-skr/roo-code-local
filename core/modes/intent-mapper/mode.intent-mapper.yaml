@@ -1,0 +1,72 @@
+# RooCode Mode Definition - Intent Mapper
+# Intent-Klassifikation für Transkript-Turns
+
+slug: "intent-mapper"
+agent: "intent-mapper"
+description: "Analysiert Transkript-Turns und weist bekannte Intents aus dem Vokabular zu"
+version: "1.0.0"
+
+model_source:
+  type: "local"
+  reference: "modules/llm-admin/config/active.yaml"
+
+tools:
+  - name: "load_vocabulary"
+    type: "vocabulary_management"
+    config:
+      source: "core/vocab/vocab.yaml"
+      cache_enabled: true
+      validation_required: true
+  
+  - name: "classify_intent"
+    type: "intent_classification"
+    config:
+      matching_algorithm: "semantic_similarity"
+      confidence_threshold: 0.7
+      fallback_strategy: "no_assignment"
+  
+  - name: "generate_mapping"
+    type: "mapping_generation"
+    config:
+      format: "json"
+      include_confidence: true
+      preserve_turn_references: true
+
+input_constraints:
+  file_types:
+    - "transcript.json"
+  max_file_size_mb: 10
+  encoding: "utf-8"
+  required_structure:
+    - "speaker"
+    - "index"
+    - "text"
+
+output_target:
+  format: "mapped.json"
+  destination: "mappings/"
+  naming_pattern: "{input_filename}.mapped.json"
+
+vocabulary_integration:
+  source_file: "core/vocab/vocab.yaml"
+  validation_required: true
+  no_unknown_intents: true
+  reference_consistency: true
+
+mapping_rules:
+  one_intent_per_turn: true
+  no_modification_of_original: true
+  explicit_null_for_unmapped: true
+  preserve_turn_references: true
+
+output_structure:
+  turn_ref:
+    format: "speaker:index"
+    required: true
+  intent_id:
+    source: "vocab.yaml"
+    nullable: true
+  confidence:
+    type: "float"
+    range: [0.0, 1.0]
+    optional: true

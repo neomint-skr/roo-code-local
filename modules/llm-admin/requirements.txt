@@ -1,0 +1,25 @@
+# RooCode LLM-Admin Module Dependencies
+# Module-specific dependencies for LLM management and integration
+# Inherits core dependencies from core/config/requirements.txt
+
+# LLM Framework Dependencies
+transformers==4.35.2
+torch==2.1.1
+llama-cpp-python==0.2.11
+
+# Process Management
+psutil>=5.9.0
+
+# Additional LLM-specific utilities
+numpy>=1.24.0
+tokenizers>=0.15.0
+
+# Model downloading and management
+huggingface-hub>=0.19.0
+safetensors>=0.4.0
+
+# Performance optimization
+accelerate>=0.24.0
+
+# Note: Core dependencies (pyyaml, requests, click, etc.) are inherited
+# from core/config/requirements.txt and should not be duplicated here

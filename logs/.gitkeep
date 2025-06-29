@@ -1,0 +1,3 @@
+# Runtime logs directory
+# All content except .gitkeep should be gitignored
+# This directory is for runtime logging only

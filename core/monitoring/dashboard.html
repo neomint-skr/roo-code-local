@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RooCode Monitoring Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        
+        .panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .panel-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .panel-content {
+            padding: 1.5rem;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .metric:last-child {
+            margin-bottom: 0;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .metric-value.good {
+            color: #28a745;
+        }
+        
+        .metric-value.warning {
+            color: #ffc107;
+        }
+        
+        .metric-value.critical {
+            color: #dc3545;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-indicator.healthy {
+            background-color: #28a745;
+        }
+        
+        .status-indicator.warning {
+            background-color: #ffc107;
+        }
+        
+        .status-indicator.critical {
+            background-color: #dc3545;
+        }
+        
+        .chart-container {
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .refresh-info {
+            text-align: center;
+            padding: 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #856404;
+        }
+        
+        .alert.critical {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .agent-card {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        
+        .agent-card.healthy {
+            border-color: #28a745;
+        }
+        
+        .agent-card.warning {
+            border-color: #ffc107;
+        }
+        
+        .agent-card.critical {
+            border-color: #dc3545;
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .agent-status {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>RooCode Monitoring Dashboard</h1>
+        <div class="subtitle">Real-time system and agent monitoring</div>
+    </div>
+    
+    <div class="dashboard">
+        <!-- System Overview Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="status-indicator healthy"></span>
+                System Overview
+            </div>
+            <div class="panel-content">
+                <div class="metric">
+                    <span class="metric-label">CPU Usage</span>
+                    <span class="metric-value good" id="cpu-usage">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Memory Usage</span>
+                    <span class="metric-value good" id="memory-usage">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Disk Usage</span>
+                    <span class="metric-value good" id="disk-usage">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Uptime</span>
+                    <span class="metric-value" id="uptime">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Agent Status Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="status-indicator healthy"></span>
+                Agent Status
+            </div>
+            <div class="panel-content">
+                <div class="agent-grid">
+                    <div class="agent-card healthy">
+                        <div class="agent-name">Buddy</div>
+                        <div class="agent-status">Operational</div>
+                    </div>
+                    <div class="agent-card healthy">
+                        <div class="agent-name">Transkriptor</div>
+                        <div class="agent-status">Ready</div>
+                    </div>
+                    <div class="agent-card healthy">
+                        <div class="agent-name">Validator</div>
+                        <div class="agent-status">Ready</div>
+                    </div>
+                    <div class="agent-card healthy">
+                        <div class="agent-name">Intent Mapper</div>
+                        <div class="agent-status">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Docker Status Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="status-indicator healthy"></span>
+                Docker Status
+            </div>
+            <div class="panel-content">
+                <div class="metric">
+                    <span class="metric-label">Containers Running</span>
+                    <span class="metric-value good" id="containers-running">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Container CPU</span>
+                    <span class="metric-value good" id="container-cpu">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Container Memory</span>
+                    <span class="metric-value good" id="container-memory">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Network I/O</span>
+                    <span class="metric-value" id="network-io">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Metrics Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="status-indicator healthy"></span>
+                Performance Metrics
+            </div>
+            <div class="panel-content">
+                <div class="metric">
+                    <span class="metric-label">Workflows Executed</span>
+                    <span class="metric-value" id="workflows-executed">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Files Processed</span>
+                    <span class="metric-value" id="files-processed">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Average Processing Time</span>
+                    <span class="metric-value" id="avg-processing-time">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Success Rate</span>
+                    <span class="metric-value good" id="success-rate">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alerts Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="status-indicator healthy"></span>
+                Active Alerts
+            </div>
+            <div class="panel-content" id="alerts-content">
+                <div style="text-align: center; color: #6c757d; font-style: italic;">
+                    No active alerts
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="status-indicator healthy"></span>
+                Recent Activity
+            </div>
+            <div class="panel-content" id="recent-activity">
+                <div style="text-align: center; color: #6c757d; font-style: italic;">
+                    Loading activity...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="refresh-info">
+        Last updated: <span id="last-updated">--</span> | Auto-refresh: 30s
+    </div>
+    
+    <script>
+        // Mock data for demonstration
+        const mockData = {
+            system: {
+                cpu: 25,
+                memory: 45,
+                disk: 60,
+                uptime: '2d 14h 32m'
+            },
+            docker: {
+                containers: 2,
+                cpu: 15,
+                memory: 35,
+                network: '1.2 MB/s'
+            },
+            performance: {
+                workflows: 127,
+                files: 1543,
+                avgTime: '2.3s',
+                successRate: 98.5
+            }
+        };
+        
+        function updateMetrics() {
+            // Update system metrics
+            document.getElementById('cpu-usage').textContent = mockData.system.cpu + '%';
+            document.getElementById('memory-usage').textContent = mockData.system.memory + '%';
+            document.getElementById('disk-usage').textContent = mockData.system.disk + '%';
+            document.getElementById('uptime').textContent = mockData.system.uptime;
+            
+            // Update Docker metrics
+            document.getElementById('containers-running').textContent = mockData.docker.containers;
+            document.getElementById('container-cpu').textContent = mockData.docker.cpu + '%';
+            document.getElementById('container-memory').textContent = mockData.docker.memory + '%';
+            document.getElementById('network-io').textContent = mockData.docker.network;
+            
+            // Update performance metrics
+            document.getElementById('workflows-executed').textContent = mockData.performance.workflows;
+            document.getElementById('files-processed').textContent = mockData.performance.files;
+            document.getElementById('avg-processing-time').textContent = mockData.performance.avgTime;
+            document.getElementById('success-rate').textContent = mockData.performance.successRate + '%';
+            
+            // Update last updated time
+            document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+            
+            // Apply color coding based on thresholds
+            updateMetricColors();
+        }
+        
+        function updateMetricColors() {
+            const cpuElement = document.getElementById('cpu-usage');
+            const memoryElement = document.getElementById('memory-usage');
+            const diskElement = document.getElementById('disk-usage');
+            
+            // CPU color coding
+            if (mockData.system.cpu > 90) {
+                cpuElement.className = 'metric-value critical';
+            } else if (mockData.system.cpu > 70) {
+                cpuElement.className = 'metric-value warning';
+            } else {
+                cpuElement.className = 'metric-value good';
+            }
+            
+            // Memory color coding
+            if (mockData.system.memory > 95) {
+                memoryElement.className = 'metric-value critical';
+            } else if (mockData.system.memory > 80) {
+                memoryElement.className = 'metric-value warning';
+            } else {
+                memoryElement.className = 'metric-value good';
+            }
+            
+            // Disk color coding
+            if (mockData.system.disk > 95) {
+                diskElement.className = 'metric-value critical';
+            } else if (mockData.system.disk > 85) {
+                diskElement.className = 'metric-value warning';
+            } else {
+                diskElement.className = 'metric-value good';
+            }
+        }
+        
+        // Initialize dashboard
+        updateMetrics();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(updateMetrics, 30000);
+        
+        // Simulate some data changes
+        setInterval(() => {
+            mockData.system.cpu = Math.max(10, Math.min(95, mockData.system.cpu + (Math.random() - 0.5) * 10));
+            mockData.system.memory = Math.max(20, Math.min(90, mockData.system.memory + (Math.random() - 0.5) * 5));
+            mockData.performance.workflows += Math.floor(Math.random() * 3);
+            mockData.performance.files += Math.floor(Math.random() * 10);
+        }, 10000);
+    </script>
+</body>
+</html>

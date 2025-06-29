@@ -1,0 +1,305 @@
+# RooCode Agent Specification - Validator
+# Detailed specification for transcript validation agent
+# Version: 1.0
+# Created: 2025-06-29
+
+specification:
+  agent_name: "validator"
+  version: "1.0.0"
+  description: "Validates transcript files for structural integrity and formal correctness"
+  
+  # Input specifications
+  input_requirements:
+    file_formats:
+      - extension: ".transcript.json"
+        description: "Structured transcript from transkriptor agent"
+        required_structure: "array_of_turn_objects"
+    
+    file_constraints:
+      max_size_mb: 25
+      encoding: "utf-8"
+      min_turns: 1
+      max_turns: 5000
+    
+    turn_structure:
+      required_fields:
+        - name: "speaker"
+          type: "string"
+          allowed_values: ["user", "agent", "system"]
+        - name: "index"
+          type: "integer"
+          minimum: 0
+        - name: "text"
+          type: "string"
+          min_length: 1
+        - name: "char_pos_start"
+          type: "integer"
+          minimum: 0
+        - name: "char_pos_end"
+          type: "integer"
+          minimum: 1
+      
+      forbidden_fields: []
+      additional_fields_allowed: false
+
+  # Validation specifications
+  validation_rules:
+    structural_validation:
+      json_syntax: true
+      array_structure: true
+      object_completeness: true
+      field_types: true
+      required_fields_present: true
+    
+    speaker_validation:
+      valid_speaker_values: ["user", "agent", "system"]
+      no_empty_speakers: true
+      speaker_consistency: true
+    
+    index_validation:
+      per_speaker_sequence: true
+      zero_based_indexing: true
+      no_gaps_in_sequence: true
+      no_duplicate_indices: true
+      ascending_order_per_speaker: true
+    
+    text_validation:
+      no_empty_text: true
+      no_null_text: true
+      text_length_reasonable: true
+      encoding_valid: true
+    
+    character_position_validation:
+      start_less_than_end: true
+      non_negative_positions: true
+      no_overlapping_ranges: true
+      ascending_start_positions: true
+      continuous_coverage: true
+      position_accuracy: true
+
+  # Error detection specifications
+  error_categories:
+    critical_errors:
+      - code: "INVALID_JSON"
+        description: "File is not valid JSON"
+        severity: "critical"
+      - code: "MISSING_REQUIRED_FIELD"
+        description: "Turn missing required field"
+        severity: "critical"
+      - code: "INVALID_FIELD_TYPE"
+        description: "Field has incorrect data type"
+        severity: "critical"
+    
+    structural_errors:
+      - code: "INVALID_SPEAKER"
+        description: "Speaker value not in allowed list"
+        severity: "error"
+      - code: "INDEX_SEQUENCE_ERROR"
+        description: "Index sequence broken or duplicated"
+        severity: "error"
+      - code: "CHARACTER_POSITION_OVERLAP"
+        description: "Character positions overlap between turns"
+        severity: "error"
+      - code: "CHARACTER_POSITION_GAP"
+        description: "Gap in character position coverage"
+        severity: "error"
+    
+    warnings:
+      - code: "UNUSUAL_TEXT_LENGTH"
+        description: "Text unusually long or short"
+        severity: "warning"
+      - code: "SPEAKER_TRANSITION_UNUSUAL"
+        description: "Unusual speaker transition pattern"
+        severity: "warning"
+
+  # Output specifications
+  output_requirements:
+    file_format: "json"
+    naming_pattern: "{input_filename}.validation.json"
+    encoding: "utf-8"
+    
+    structure:
+      type: "object"
+      required_fields:
+        - name: "status"
+          type: "string"
+          allowed_values: ["valid", "invalid", "warning"]
+        - name: "file"
+          type: "string"
+          description: "Path to validated file"
+        - name: "validated_at"
+          type: "string"
+          format: "iso8601_timestamp"
+        - name: "turn_count"
+          type: "integer"
+          minimum: 0
+        - name: "errors"
+          type: "array"
+          items: "error_object"
+        - name: "warnings"
+          type: "array"
+          items: "warning_object"
+        - name: "statistics"
+          type: "object"
+          description: "Validation statistics"
+    
+    error_object_structure:
+      required_fields:
+        - name: "code"
+          type: "string"
+        - name: "message"
+          type: "string"
+        - name: "severity"
+          type: "string"
+          allowed_values: ["critical", "error", "warning"]
+        - name: "turn_index"
+          type: "integer"
+          nullable: true
+        - name: "field"
+          type: "string"
+          nullable: true
+        - name: "context"
+          type: "object"
+          nullable: true
+
+  # Processing specifications
+  processing_workflow:
+    steps:
+      1: "load_and_parse_json"
+      2: "validate_structure"
+      3: "validate_speakers"
+      4: "validate_indices"
+      5: "validate_text_fields"
+      6: "validate_character_positions"
+      7: "generate_statistics"
+      8: "compile_report"
+      9: "save_validation_result"
+    
+    error_handling:
+      fail_fast: false
+      collect_all_errors: true
+      continue_on_warnings: true
+      max_errors_per_category: 100
+
+  # Quality assurance
+  validation_criteria:
+    accuracy:
+      - "All structural errors detected"
+      - "No false positives for valid files"
+      - "Character position validation 100% accurate"
+      - "Index sequence validation complete"
+    
+    completeness:
+      - "All validation rules applied"
+      - "All error categories checked"
+      - "Complete error context provided"
+      - "Statistics accurately calculated"
+    
+    consistency:
+      - "Same file produces same validation result"
+      - "Error messages are clear and actionable"
+      - "Severity levels correctly assigned"
+      - "Report format strictly conformant"
+
+  # Performance specifications
+  performance_requirements:
+    processing_time:
+      max_seconds_per_mb: 10
+      max_total_seconds: 120
+    
+    memory_usage:
+      max_mb_per_file: 50
+      streaming_for_large_files: true
+    
+    throughput:
+      max_concurrent_validations: 10
+      batch_processing: true
+
+  # Integration specifications
+  integration_points:
+    input_sources:
+      - "data/output/*.transcript.json"
+      - "data/transcripts/*.transcript.json"
+    
+    output_destinations:
+      - "data/validation/{filename}.validation.json"
+    
+    previous_agents:
+      - "transkriptor"
+    
+    next_agents:
+      - "intent-mapper"
+    
+    dependencies:
+      required: []
+      optional: []
+
+  # Configuration parameters
+  configuration:
+    validation_strictness:
+      level: "strict"
+      allow_additional_fields: false
+      require_all_validations: true
+    
+    error_reporting:
+      max_errors_per_file: 1000
+      include_context: true
+      detailed_messages: true
+    
+    performance:
+      streaming_threshold_mb: 5
+      parallel_validation: false
+      cache_results: false
+
+  # Monitoring and logging
+  monitoring:
+    metrics:
+      - "files_validated_count"
+      - "validation_time_seconds"
+      - "error_detection_rate"
+      - "false_positive_rate"
+    
+    logging:
+      level: "INFO"
+      include_statistics: true
+      include_error_details: true
+    
+    alerts:
+      - condition: "validation_time > 120s"
+        action: "log_warning"
+      - condition: "error_rate > 0.5"
+        action: "log_info"
+
+  # Testing specifications
+  testing:
+    unit_tests:
+      - "test_json_parsing"
+      - "test_structure_validation"
+      - "test_speaker_validation"
+      - "test_index_validation"
+      - "test_character_position_validation"
+      - "test_error_reporting"
+    
+    integration_tests:
+      - "test_transkriptor_output_validation"
+      - "test_large_file_validation"
+      - "test_error_file_handling"
+    
+    test_data:
+      valid_files:
+        - "perfect_transcript.transcript.json"
+        - "minimal_transcript.transcript.json"
+        - "large_transcript.transcript.json"
+      
+      invalid_files:
+        - "missing_fields.transcript.json"
+        - "invalid_speakers.transcript.json"
+        - "broken_indices.transcript.json"
+        - "overlapping_positions.transcript.json"
+
+# Compliance validation
+compliance:
+  roocode_standards: true
+  template_conformity: true
+  ci_validation: true
+  documentation_complete: true

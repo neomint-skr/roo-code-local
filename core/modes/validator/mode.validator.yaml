@@ -1,0 +1,73 @@
+# RooCode Mode Definition - Validator
+# Validierung von Transkriptdateien auf formale Korrektheit
+
+slug: "validator"
+agent: "validator"
+description: "Überprüft Transkriptdateien auf strukturelle Integrität und formale Korrektheit"
+version: "1.0.0"
+
+model_source:
+  type: "local"
+  reference: "modules/llm-admin/config/active.yaml"
+
+tools:
+  - name: "validate_structure"
+    type: "structural_validation"
+    config:
+      check_required_fields: true
+      validate_data_types: true
+      verify_field_consistency: true
+  
+  - name: "validate_sequence"
+    type: "sequence_validation"
+    config:
+      check_speaker_transitions: true
+      validate_index_sequence: true
+      verify_character_positions: true
+  
+  - name: "generate_report"
+    type: "report_generation"
+    config:
+      format: "json"
+      include_line_numbers: true
+      detailed_error_messages: true
+
+input_constraints:
+  file_types:
+    - "transcript.json"
+  max_file_size_mb: 10
+  encoding: "utf-8"
+  required_fields:
+    - "speaker"
+    - "index"
+    - "text"
+    - "char_pos_start"
+    - "char_pos_end"
+
+output_target:
+  format: "validation.json"
+  destination: "validation/"
+  naming_pattern: "{input_filename}.validation.json"
+
+validation_rules:
+  speaker_field:
+    allowed_values: ["user", "agent"]
+    required: true
+  index_field:
+    type: "integer"
+    min_value: 0
+    sequential: true
+  text_field:
+    type: "string"
+    min_length: 1
+    no_empty_strings: true
+  char_positions:
+    ascending_order: true
+    no_overlaps: true
+    valid_ranges: true
+
+error_reporting:
+  format: "structured"
+  include_context: true
+  reference_line_numbers: true
+  machine_readable: true

@@ -1,0 +1,240 @@
+# RooCode Agent Specification - Transkriptor
+# Detailed specification for transcript processing agent
+# Version: 1.0
+# Created: 2025-06-29
+
+specification:
+  agent_name: "transkriptor"
+  version: "1.0.0"
+  description: "Converts chat export files to structured transcript JSON with speaker detection and segmentation"
+  
+  # Input specifications
+  input_requirements:
+    file_formats:
+      - extension: ".chat.json"
+        description: "Standard chat export format"
+        required_fields: ["messages", "conversation_id"]
+        optional_fields: ["created_at", "metadata"]
+      - extension: ".gpt-export.json"
+        description: "GPT chat export format"
+        required_fields: ["conversation", "messages"]
+        optional_fields: ["title", "create_time"]
+    
+    file_constraints:
+      max_size_mb: 50
+      encoding: "utf-8"
+      min_messages: 1
+      max_messages: 10000
+    
+    content_validation:
+      message_structure:
+        required_fields: ["role", "content"]
+        optional_fields: ["timestamp", "metadata"]
+      role_values: ["user", "assistant", "system"]
+      content_constraints:
+        min_length: 1
+        max_length: 10000
+        no_empty_strings: true
+
+  # Processing specifications
+  processing_rules:
+    speaker_detection:
+      algorithm: "role_based_mapping"
+      mapping:
+        user: "user"
+        assistant: "agent"
+        system: "system"
+      fallback_strategy: "pattern_analysis"
+    
+    segmentation:
+      method: "natural_turn_boundaries"
+      preserve_order: true
+      maintain_context: true
+      no_content_modification: true
+    
+    indexing:
+      per_speaker: true
+      zero_based: true
+      sequential: true
+      no_gaps: true
+    
+    character_positioning:
+      absolute_positions: true
+      non_overlapping: true
+      ascending_order: true
+      include_whitespace: true
+
+  # Output specifications
+  output_requirements:
+    file_format: "json"
+    naming_pattern: "{input_filename}.transcript.json"
+    encoding: "utf-8"
+    
+    structure:
+      type: "array"
+      items:
+        type: "object"
+        required_fields:
+          - name: "speaker"
+            type: "string"
+            allowed_values: ["user", "agent", "system"]
+          - name: "index"
+            type: "integer"
+            minimum: 0
+          - name: "text"
+            type: "string"
+            min_length: 1
+          - name: "char_pos_start"
+            type: "integer"
+            minimum: 0
+          - name: "char_pos_end"
+            type: "integer"
+            minimum: 1
+        
+        validation_rules:
+          - "char_pos_end > char_pos_start"
+          - "index increments per speaker"
+          - "no overlapping character positions"
+          - "text matches original content exactly"
+
+  # Quality assurance
+  validation_criteria:
+    completeness:
+      - "All input messages converted to turns"
+      - "No content loss or modification"
+      - "All speakers properly identified"
+      - "Character positions cover entire text"
+    
+    accuracy:
+      - "Speaker detection 100% accurate for role-based input"
+      - "Turn order preserved from original"
+      - "Character positions mathematically correct"
+      - "No duplicate or missing turns"
+    
+    consistency:
+      - "Index numbering consistent per speaker"
+      - "Character positions non-overlapping"
+      - "Output format strictly conformant"
+      - "Reproducible results for same input"
+
+  # Error handling
+  error_handling:
+    invalid_input:
+      action: "reject_with_detailed_error"
+      error_codes:
+        - "INVALID_FILE_FORMAT"
+        - "MISSING_REQUIRED_FIELDS"
+        - "CONTENT_TOO_LARGE"
+        - "ENCODING_ERROR"
+    
+    processing_errors:
+      action: "fail_fast_with_context"
+      error_codes:
+        - "SPEAKER_DETECTION_FAILED"
+        - "SEGMENTATION_ERROR"
+        - "CHARACTER_POSITION_CONFLICT"
+        - "OUTPUT_GENERATION_FAILED"
+    
+    recovery_strategies:
+      partial_processing: false
+      fallback_modes: false
+      manual_intervention: true
+
+  # Performance specifications
+  performance_requirements:
+    processing_time:
+      max_seconds_per_mb: 30
+      max_total_seconds: 300
+    
+    memory_usage:
+      max_mb_per_file: 100
+      streaming_threshold_mb: 10
+    
+    throughput:
+      max_concurrent_files: 5
+      batch_processing: false
+
+  # Integration specifications
+  integration_points:
+    input_sources:
+      - "data/input/*.chat.json"
+      - "data/input/*.gpt-export.json"
+    
+    output_destinations:
+      - "data/output/{filename}.transcript.json"
+    
+    next_agents:
+      - "validator"
+      - "intent-mapper"
+    
+    dependencies:
+      required: []
+      optional: ["llm-admin"]
+
+  # Configuration parameters
+  configuration:
+    speaker_detection:
+      confidence_threshold: 0.95
+      pattern_analysis_enabled: true
+      custom_role_mapping: {}
+    
+    processing:
+      preserve_timestamps: true
+      include_metadata: false
+      validate_output: true
+    
+    output:
+      pretty_print: true
+      include_statistics: false
+      backup_enabled: true
+
+  # Monitoring and logging
+  monitoring:
+    metrics:
+      - "files_processed_count"
+      - "processing_time_seconds"
+      - "speaker_detection_accuracy"
+      - "output_file_size_bytes"
+    
+    logging:
+      level: "INFO"
+      include_performance: true
+      include_validation_results: true
+    
+    alerts:
+      - condition: "processing_time > 300s"
+        action: "log_warning"
+      - condition: "speaker_detection_accuracy < 0.95"
+        action: "log_error"
+
+  # Testing specifications
+  testing:
+    unit_tests:
+      - "test_speaker_detection"
+      - "test_character_positioning"
+      - "test_output_format"
+      - "test_error_handling"
+    
+    integration_tests:
+      - "test_file_processing_pipeline"
+      - "test_validator_integration"
+      - "test_large_file_handling"
+    
+    test_data:
+      sample_files:
+        - "small_conversation.chat.json"
+        - "large_conversation.chat.json"
+        - "multi_speaker.gpt-export.json"
+      
+      edge_cases:
+        - "empty_messages"
+        - "very_long_content"
+        - "special_characters"
+        - "unicode_content"
+
+# Compliance validation
+compliance:
+  roocode_standards: true
+  template_conformity: true
+  ci_validation: true
+  documentation_complete: true

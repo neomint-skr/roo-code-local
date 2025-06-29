@@ -1,0 +1,3 @@
+# Temporary directory for user input staging
+# All content except .gitkeep should be gitignored
+# This directory is for runtime file staging only

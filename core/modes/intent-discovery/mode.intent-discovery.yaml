@@ -1,0 +1,73 @@
+# RooCode Mode Definition - Intent Discovery
+# Erkennung neuer Intent-Kandidaten aus unmapped Turns
+
+slug: "intent-discovery"
+agent: "intent-discovery"
+description: "Identifiziert unmapped Turns und erzeugt Vorschläge für neue Intent-Definitionen"
+version: "1.0.0"
+
+model_source:
+  type: "local"
+  reference: "modules/llm-admin/config/active.yaml"
+
+tools:
+  - name: "analyze_unmapped"
+    type: "unmapped_analysis"
+    config:
+      load_mappings: true
+      load_transcripts: true
+      identify_patterns: true
+  
+  - name: "generate_suggestions"
+    type: "suggestion_generation"
+    config:
+      clustering_enabled: false
+      one_suggestion_per_turn: true
+      structured_output: true
+  
+  - name: "save_suggestions"
+    type: "suggestion_storage"
+    config:
+      versioned_storage: true
+      yaml_format: true
+      validation_required: true
+
+input_constraints:
+  file_types:
+    - "mapped.json"
+    - "transcript.json"
+  max_file_size_mb: 10
+  encoding: "utf-8"
+  paired_files_required: true
+
+output_target:
+  format: "yaml"
+  destination: "intent-scout/suggestions/"
+  naming_pattern: "{date}_{context}.yaml"
+
+suggestion_structure:
+  suggested_id:
+    format: "category.subcategory.number"
+    machine_readable: true
+  label:
+    type: "string"
+    human_readable: true
+  explanation:
+    type: "string"
+    reasoning_required: true
+  source_turn:
+    format: "speaker:index"
+    reference_required: true
+
+processing_rules:
+  no_auto_approval: true
+  no_content_modification: true
+  no_duplicate_suggestions: true
+  one_turn_per_suggestion: true
+  deterministic_processing: true
+
+validation_requirements:
+  yaml_conformity: true
+  template_compliance: true
+  no_existing_intent_duplicates: true
+  reproducible_output: true

@@ -1,0 +1,44 @@
+# Central Intent Vocabulary for RooCode Project
+# This file contains the complete, project-wide valid intent vocabulary
+# Format: YAML list with alphabetically sorted entries
+# Version: 1.0
+# Created: 2025-06-28
+
+# Each vocabulary item structure:
+# - id: unique system-wide identifier (e.g., inform.question, confirm.approval)
+# - label: human-readable short name
+# - description: optional semantic differentiation
+# - created_on: ISO 8601 timestamp
+# - origin: source indication (manual / agent / file)
+
+intents:
+  - id: "inform.question"
+    label: "Information Request"
+    description: "User requests specific information or clarification"
+    created_on: "2025-06-28T00:00:00Z"
+    origin: "manual"
+    
+  - id: "confirm.approval"
+    label: "Confirmation Request"
+    description: "User seeks approval or confirmation for an action"
+    created_on: "2025-06-28T00:00:00Z"
+    origin: "manual"
+    
+  - id: "task.execute"
+    label: "Task Execution Request"
+    description: "User requests execution of a specific task or operation"
+    created_on: "2025-06-28T00:00:00Z"
+    origin: "manual"
+    
+  - id: "system.status"
+    label: "System Status Inquiry"
+    description: "User requests information about system state or health"
+    created_on: "2025-06-28T00:00:00Z"
+    origin: "manual"
+
+# Validation rules:
+# - Each id must be unique across all entries
+# - No duplicate entries allowed
+# - All entries must contain required fields: id, label, created_on, origin
+# - Structure must be CI-compatible and machine-readable
+# - When extended by vocab-updater, no existing IDs are modified

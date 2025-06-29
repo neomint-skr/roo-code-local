@@ -1,215 +1,120 @@
 # RooCode Local Agent System
 
-Ein lokal betreibbares, agentenbasiertes RooCode-Projekt für deterministische KI-Workflows.
-Vollständig containerisiert für einfache Installation und Ausführung.
+> Lokal betreibbares, agentenbasiertes RooCode-Projekt für deterministische KI-Workflows mit vollständiger Docker-Containerisierung
 
-## Quickstart (Task 39 Implementation)
+[![Runtime: Docker](https://img.shields.io/badge/runtime-Docker-blue)](https://docker.com)
+[![Deployment: Single Command](https://img.shields.io/badge/deployment-Single%20Command-informational)](./docker-run.ps1)
+[![Access: Local API](https://img.shields.io/badge/access-Local%20API-lightgrey)](http://localhost:8080)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-brightgreen)](LICENSE)
+[![Code Style: Good Practice](https://img.shields.io/badge/code--style-good%20practice-critical)](docs/core.md)
 
-**Single Entry Point - No Local Dependencies Required**
+---
+
+## Overview
+
+Ein vollständig containerisiertes RooCode-System für lokale KI-Agent-Workflows mit deterministischer Ausführung.
+
+- **Docker-Only Deployment** – Keine lokalen Dependencies erforderlich
+- **Agent-basierte Architektur** – Modulare, hot-swappable Agenten-Modi
+- **4D Validation Framework** – GUTWILLIG, INTELLIGENT, KONTEXT-AWARE, FAUL
+- **Enterprise-Grade Containerization** – Single-command deployment mit vollständiger Isolation
+
+---
+
+## Quick Launch
 
 ```powershell
-# Windows - One command start
 git clone https://github.com/neomint-skr/roo-code-local
 cd roo-code-local
 ./docker-run.ps1
 ```
 
-```bash
-# Linux/macOS - Direct Docker run
-git clone https://github.com/neomint-skr/roo-code-local
-cd roo-code-local
-docker run -it --rm -v $(pwd):/project -p 11434:11434 -p 8080:8080 neomint/roo-agent-buddy:latest
-```
+This installer will:
 
-## Task 39: Docker-Only System
+- **Check Docker prerequisites** – Verify Docker Desktop/Engine availability
+- **Launch containerized system** – Start all services with proper volume mapping
+- **Activate agent interface** – Enable API endpoints on localhost:8080 and localhost:11434
 
-**Alle lokalen Skripte entfernt - Nur noch Docker-basierte Ausführung**
-
-Das System läuft vollständig in Docker-Containern. Alle PowerShell-Skripte wurden entfernt:
-- ❌ `start.ps1` (entfernt)
-- ❌ `bootstrap.ps1` (entfernt)
-- ❌ `validate_all.ps1` (entfernt)
-- ❌ `*-run.ps1` Engine-Skripte (entfernt)
-- ❌ `test_registry.ps1` (entfernt)
-- ❌ Template-Dateien (entfernt)
-
-### Einziger Einstiegspunkt
+For development:
 
 ```powershell
-# Windows - Einziger Befehl für alles
-./docker-run.ps1
-
-# Verschiedene Profile
-./docker-run.ps1 -Profile buddy
-./docker-run.ps1 -Profile transkriptor
+./docker-run.ps1 -Profile buddy -DebugMode
 ```
 
-### Erweiterte Docker-Befehle
+---
 
-```bash
-# Container starten
-docker compose up --build --detach
+## Project Structure
 
-# Logs anzeigen
-docker logs roo-system -f
-
-# Shell-Zugriff
-docker exec -it roo-system bash
-
-# System stoppen
-docker compose down
-
-# Komplett neu starten
-docker compose down && docker compose up --build --detach
+```text
+roo-code-local/                 → RooCode Local Agent System
+├── core/                       → System-critical components
+│   ├── modes/                  → Agent mode definitions
+│   ├── templates/              → YAML templates for CI validation
+│   ├── ci/                     → Validation and automation scripts
+│   ├── vocab/                  → Intent vocabulary management
+│   ├── config/                 → System configuration files
+│   ├── bootstrap/              → System initialization scripts
+│   └── docker/                 → Container definitions and deployment
+├── modules/                    → Hot-swappable extensions
+│   └── llm-admin/             → Local model management and API integration
+├── docs/                       → Consolidated documentation
+│   └── core.md                → Core system documentation
+├── temp/                       → Temporary files and orchestration
+├── logs/                       → System logs and audit trails
+└── data/                       → Input/output data processing
 ```
 
-## Architektur
+Note: Structure follows RooCode specification with 4D validation principles.
 
-### Verzeichnisstruktur
+---
 
-```
-├── core/                    # Systemkritische Komponenten
-│   ├── modes/              # Agenten-Modi (transkriptor, buddy, etc.)
-│   ├── templates/          # YAML-Templates für CI-Validierung
-│   └── ci/                 # Prüf- und Automatisierungsskripte
-├── modules/                # Optionale Funktionsmodule
-│   └── llm-admin/         # LLM-Verwaltung und API-Integration
-└── pim/                   # Project Information Management
-    ├── tasks/             # YAML-basierte Task-Definitionen
-    └── status.yaml        # Aktueller Ausführungsstatus
-```
+## Core
 
-### Hauptkomponenten
+- **Immutable Agent Kernel** – Deterministic mode execution with state isolation
+- **Causality Mapping** – Intent-based workflow orchestration with reset behavior
+- **Agent Interface** – Standardized API for mode communication and coordination
+- **Persistent State Strategy** – YAML-based configuration with history tracking
 
-- **Modes**: Definierte Agenten-Modi mit spezifischen Fähigkeiten
-- **LLM-Admin**: Lokale Modellverwaltung und API-Server
-- **Templates**: CI-validierbare Strukturvorlagen
-- **Docker**: Containerisierte Systeminitialisierung
+---
 
-## Systemvoraussetzungen
+## Module
 
-- **Docker**: Docker Desktop (Windows/macOS) oder Docker Engine (Linux)
-- **Speicher**: Mindestens 8GB RAM für lokale LLM-Modelle
-- **Festplatte**: 10GB freier Speicherplatz für Container und Modelle
-- **Betriebssystem**: Windows 10/11, macOS, oder Linux mit Docker-Unterstützung
+- **LLM-Admin** – Local model management, API integration, and engine abstraction
+- **Intent-Scout** – Conversation analysis and intent suggestion generation
+- **Transcript-Processor** – Chat export conversion to structured JSON format
 
-### Keine lokalen Abhängigkeiten erforderlich
+Additional modules can be added or removed without modifying the core.
 
-Das System läuft vollständig in Docker-Containern. Python, LLM-Engines und alle anderen Abhängigkeiten sind bereits im Container enthalten.
+---
 
-## Nutzung
+## Design Principles
 
-### System-Zugriff
+* **Intent over Implementation** – Focus on what agents should accomplish, not how
+* **Modularity and Swappability** – Hot-swappable components with standardized interfaces
+* **No Hidden Behavior** – All agent actions explicitly defined in YAML specifications
+* **Explicit State Transitions** – Deterministic workflow progression with audit trails
 
-Nach dem Start ist das System über folgende Endpunkte erreichbar:
+---
 
-- **API-Server**: http://localhost:8080
-- **LLM-Engine**: http://localhost:11434
-- **API-Key**: `local-mode-key`
-- **Standard-Profil**: `buddy`
+## System Validation
 
-### Agenten-Modi
-
-- `buddy`: Zentraler Koordinations-Agent (Standard)
-- `transkriptor`: Audio-zu-Text-Verarbeitung mit Intent-Mapping
-- `intent-mapper`: Intent-Klassifikation für Transkripte
-- `vocab-updater`: Vokabular-Management
-
-### Container-Verwaltung
-
-```bash
-# Status prüfen
-docker ps
-
-# Logs anzeigen
-docker logs roo-system
-
-# Container-Shell öffnen
-docker exec -it roo-system bash
-
-# System neu starten
-docker restart roo-system
+```powershell
+./docker-run.ps1 -Validate
 ```
 
-### Konfiguration
+This script performs:
 
-Die Konfiguration erfolgt über Umgebungsvariablen in `.env.docker`:
+- **Component Health Check** – Verify all Docker services and API endpoints
+- **Smart Recovery Logic** – Automatic container restart and dependency resolution
+- **Full System Validation** – End-to-end workflow testing with agent coordination
+- **Launch UI if Success** – Open browser interface on successful validation
 
-```bash
-# Profil ändern
-PROFILE=buddy
+---
 
-# Ports anpassen
-API_PORT=8080
-LLM_PORT=11434
+## License
 
-# Log-Level setzen
-LOG_LEVEL=INFO
-```
-
-## Entwicklung und Erweiterung
-
-### Neue Agenten-Modi
-
-Neue Agenten-Modi werden über YAML-Spezifikationen in `core/modes/` definiert.
-Templates in `core/templates/` stellen strukturelle Konsistenz sicher.
-
-### Lokale Entwicklung
-
-```bash
-# Container mit Volume-Mapping für Entwicklung
-docker run -it --rm \
-  -v $(pwd):/app \
-  -p 8080:8080 \
-  -p 11434:11434 \
-  neomint/roo-agent-buddy bash
-
-# Änderungen testen
-docker compose up --build
-```
-
-### CI/CD und Validierung
-
-Das System validiert automatisch:
-- YAML-Strukturintegrität
-- Template-Konformität
-- Referenzielle Konsistenz
-- Docker-Container-Funktionalität
-
-```bash
-# Validierung im Container ausführen
-docker exec roo-system python -m pytest core/tests/
-```
-
-## Fehlerbehebung
-
-### Häufige Probleme
-
-**Container startet nicht:**
-```bash
-# Logs prüfen
-docker logs roo-system
-
-# Container neu erstellen
-docker compose down
-docker compose up --build
-```
-
-**Port bereits belegt:**
-```bash
-# Andere Ports verwenden
-./docker-run.ps1 -Port 8081 -LLMPort 11435
-```
-
-**Speicherprobleme:**
-```bash
-# Docker-Ressourcen erhöhen in Docker Desktop
-# Oder Container-Limits anpassen in docker-compose.yaml
-```
-
-## Support
-
-- **Logs**: `docker logs roo-system`
-- **Konfiguration**: `.env.docker`
-- **Gesundheitsprüfung**: http://localhost:8080/health
-- **Container-Shell**: `docker exec -it roo-system bash`
+Creative Commons Attribution-NonCommercial 4.0 International
+Copyright © NEOMINT-RESEARCH
+Author: skr
+Contact: [research@neomint.com](mailto:research@neomint.com)
+See [LICENSE](LICENSE) for full terms.

@@ -1,0 +1,14 @@
+# RooCode Production Dependencies
+# Minimal dependency set for production deployment
+# Inherits only core runtime dependencies
+
+# Production-optimized core dependencies (from core/config/requirements.txt)
+# Only essential runtime dependencies, no development or testing tools
+
+# Core runtime only - LLM integration moved to modules
+# Testing and development tools excluded
+# Optimized for minimal container size and security
+
+# Note: This file references core/config/requirements.txt for base dependencies
+# Additional module-specific dependencies loaded separately
+# Use: pip install -r core/config/requirements.txt (excludes dev/test dependencies)

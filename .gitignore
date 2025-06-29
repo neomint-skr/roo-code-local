@@ -1,8 +1,12 @@
 # Python
 .venv/
+venv/
+env/
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
 *.so
 .Python
 build/
@@ -22,28 +26,69 @@ wheels/
 *.egg
 MANIFEST
 
-# Logs and temporary files
+# Logs and temporary files - RooCode compliant
 *.log
 *.tmp
 *.checkpoint
-logs/
+*.cache
+logs/*
+!logs/.gitkeep
 *.log.yaml
+
+# RooCode runtime directories
+temp/*
+!temp/.gitkeep
+data/
+intent-scout/
+models/
+engines/
+
+# AI/ML Runtime Artifacts
+*.pth
+*.pt
+*.onnx
+.cache/
+conversations/
+sessions/
+.huggingface/
 
 # RooCode specific
 *.mapped.json
 *.transcript.json
 
+# Docker & Container Operations
+.docker/
+docker-compose.override.yml
+.env.local
+.env.*.local
+
 # Environment and IDE
 .env
 .DS_Store
+desktop.ini
 .ipynb_checkpoints/
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Node.js (if applicable)
+node_modules/
 
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Sensitive Configuration
+*.key
+*.pem
+*secret*
+*token*
+config.local.*
+settings.local.*
+*.db
+*.sqlite*
 
 # OS specific
 Thumbs.db

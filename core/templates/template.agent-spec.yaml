@@ -1,0 +1,197 @@
+# RooCode Comprehensive Agent Specification Template
+# Template for creating detailed agent specifications with full validation
+# Version: 1.0
+# Created: 2025-06-29
+
+specification:
+  agent_name: "{agent_name}"
+  version: "{version}"
+  description: "{detailed_description}"
+  
+  # Input specifications
+  input_requirements:
+    file_formats:
+      - extension: "{file_extension}"
+        description: "{format_description}"
+        required_fields: ["{field1}", "{field2}"]
+        optional_fields: ["{optional_field1}"]
+    
+    file_constraints:
+      max_size_mb: {max_size}
+      encoding: "utf-8"
+      min_items: {min_items}
+      max_items: {max_items}
+    
+    content_validation:
+      required_structure: "{structure_type}"
+      validation_rules:
+        - "{validation_rule_1}"
+        - "{validation_rule_2}"
+
+  # Processing specifications
+  processing_workflow:
+    steps:
+      1: "{step_1_name}"
+      2: "{step_2_name}"
+      3: "{step_3_name}"
+    
+    processing_rules:
+      algorithm: "{processing_algorithm}"
+      method: "{processing_method}"
+      constraints:
+        - "{constraint_1}"
+        - "{constraint_2}"
+
+  # Output specifications
+  output_requirements:
+    file_format: "{output_format}"
+    naming_pattern: "{naming_pattern}"
+    encoding: "utf-8"
+    
+    structure:
+      type: "{output_structure_type}"
+      required_fields:
+        - name: "{field_name}"
+          type: "{field_type}"
+          description: "{field_description}"
+      
+      validation_rules:
+        - "{output_validation_rule_1}"
+        - "{output_validation_rule_2}"
+
+  # Quality assurance
+  validation_criteria:
+    accuracy:
+      - "{accuracy_criterion_1}"
+      - "{accuracy_criterion_2}"
+    
+    completeness:
+      - "{completeness_criterion_1}"
+      - "{completeness_criterion_2}"
+    
+    consistency:
+      - "{consistency_criterion_1}"
+      - "{consistency_criterion_2}"
+
+  # Error handling
+  error_handling:
+    input_errors:
+      action: "{error_action}"
+      error_codes:
+        - "{error_code_1}"
+        - "{error_code_2}"
+    
+    processing_errors:
+      action: "{processing_error_action}"
+      recovery_strategies:
+        - "{recovery_strategy_1}"
+
+  # Performance specifications
+  performance_requirements:
+    processing_time:
+      max_seconds_per_item: {max_seconds_per_item}
+      max_total_seconds: {max_total_seconds}
+    
+    memory_usage:
+      max_mb_per_file: {max_memory_mb}
+    
+    throughput:
+      max_concurrent_files: {max_concurrent}
+
+  # Integration specifications
+  integration_points:
+    input_sources:
+      - "{input_source_1}"
+      - "{input_source_2}"
+    
+    output_destinations:
+      - "{output_destination_1}"
+    
+    previous_agents:
+      - "{previous_agent_1}"
+    
+    next_agents:
+      - "{next_agent_1}"
+    
+    dependencies:
+      required: ["{required_dependency_1}"]
+      optional: ["{optional_dependency_1}"]
+
+  # Configuration parameters
+  configuration:
+    processing:
+      parameter_1: {default_value_1}
+      parameter_2: {default_value_2}
+    
+    output:
+      format_option_1: {format_default_1}
+      format_option_2: {format_default_2}
+
+  # Monitoring and logging
+  monitoring:
+    metrics:
+      - "{metric_1}"
+      - "{metric_2}"
+    
+    logging:
+      level: "{log_level}"
+      include_details: {include_details_boolean}
+    
+    alerts:
+      - condition: "{alert_condition_1}"
+        action: "{alert_action_1}"
+
+  # Testing specifications
+  testing:
+    unit_tests:
+      - "{unit_test_1}"
+      - "{unit_test_2}"
+    
+    integration_tests:
+      - "{integration_test_1}"
+      - "{integration_test_2}"
+    
+    test_data:
+      sample_files:
+        - "{test_file_1}"
+        - "{test_file_2}"
+      
+      edge_cases:
+        - "{edge_case_1}"
+        - "{edge_case_2}"
+
+# Compliance validation
+compliance:
+  roocode_standards: true
+  template_conformity: true
+  ci_validation: true
+  documentation_complete: true
+
+# Template usage instructions
+template_usage:
+  description: "This template provides the comprehensive structure for RooCode agent specifications"
+  
+  required_replacements:
+    - placeholder: "{agent_name}"
+      description: "Name of the agent (e.g., 'transkriptor', 'validator')"
+    - placeholder: "{version}"
+      description: "Version number (e.g., '1.0.0')"
+    - placeholder: "{detailed_description}"
+      description: "Comprehensive description of agent functionality"
+  
+  optional_sections:
+    - section: "configuration"
+      description: "Agent-specific configuration parameters"
+    - section: "monitoring"
+      description: "Monitoring and alerting specifications"
+  
+  validation_rules:
+    - "All placeholders must be replaced with actual values"
+    - "All sections must be relevant to the specific agent"
+    - "Compliance section must remain unchanged"
+    - "Template usage section should be removed in final specification"
+  
+  examples:
+    - "See spec.transkriptor.yaml for a complete example"
+    - "See spec.validator.yaml for validation-focused example"
+    - "See spec.buddy.yaml for orchestration example"

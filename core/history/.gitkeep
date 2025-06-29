@@ -1,0 +1,4 @@
+# Core History Directory
+# This directory stores runlog files from buddy agent executions
+# Format: <timestamp>.runlog.yaml
+# Purpose: Maintains audit trail of all agent orchestration activities

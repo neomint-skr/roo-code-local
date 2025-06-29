@@ -1,0 +1,69 @@
+# Buddy Workflow Definitions
+# Deklarative Definition wiederverwendbarer Prozessketten für Buddy
+# Version: 1.0
+# Created: 2025-06-29
+
+flows:
+  - id: "transcript_processing"
+    label: "Complete Transcript Processing"
+    description: "Vollständige Verarbeitung von Chat-Exporten zu Intent-Mappings"
+    steps:
+      - "transkriptor"
+      - "validator"
+      - "intent-mapper"
+      - "intent-discovery"
+    input:
+      default_folder: "data/input"
+      file_pattern: "*.chat.json"
+      output_folder: "data/output"
+
+  - id: "validation_only"
+    label: "Validation Only Workflow"
+    description: "Nur Validierung bestehender Transkripte ohne Verarbeitung"
+    steps:
+      - "validator"
+    input:
+      default_folder: "data/transcripts"
+      file_pattern: "*.transcript.json"
+      output_folder: "data/validation"
+
+  - id: "intent_mapping"
+    label: "Intent Mapping Workflow"
+    description: "Intent-Mapping für bereits validierte Transkripte"
+    steps:
+      - "intent-mapper"
+      - "intent-discovery"
+    input:
+      default_folder: "data/transcripts"
+      file_pattern: "*.transcript.json"
+      output_folder: "data/intents"
+
+  - id: "vocab_update"
+    label: "Vocabulary Update Workflow"
+    description: "Aktualisierung des Vokabulars mit kuratierten Vorschlägen"
+    steps:
+      - "vocab-updater"
+    input:
+      default_folder: "intent-scout/suggestions"
+      file_pattern: "*.yaml"
+      output_folder: "core/vocab"
+
+  - id: "full_pipeline"
+    label: "Complete Processing Pipeline"
+    description: "Vollständige Pipeline von Chat-Export bis Vokabular-Update"
+    steps:
+      - "transkriptor"
+      - "validator"
+      - "intent-mapper"
+      - "intent-discovery"
+      - "vocab-updater"
+    input:
+      default_folder: "data/input"
+      file_pattern: "*.chat.json"
+      output_folder: "data/complete"
+
+# Validation rules:
+# - All referenced steps must exist as valid RooCode mode slugs
+# - No conditional flow, loops, or recursion allowed
+# - All steps must be locally available
+# - Execution must be deterministically reproducible

@@ -1,0 +1,281 @@
+# RooCode Monitoring Configuration
+# Real-time monitoring, metrics collection, and alerting system
+# Version: 1.0
+# Created: 2025-06-29
+
+monitoring:
+  enabled: true
+  collection_interval_seconds: 30
+  retention_days: 30
+  storage_path: "data/monitoring"
+  
+  # System metrics
+  system_metrics:
+    enabled: true
+    collect_cpu: true
+    collect_memory: true
+    collect_disk: true
+    collect_network: false
+    
+    thresholds:
+      cpu_warning: 70
+      cpu_critical: 90
+      memory_warning: 80
+      memory_critical: 95
+      disk_warning: 85
+      disk_critical: 95
+
+  # Agent metrics
+  agent_metrics:
+    enabled: true
+    track_execution_time: true
+    track_success_rate: true
+    track_error_rate: true
+    track_throughput: true
+    
+    agents:
+      buddy:
+        metrics:
+          - "workflows_executed"
+          - "workflow_success_rate"
+          - "average_execution_time"
+          - "active_workflows"
+        thresholds:
+          execution_time_warning: 300
+          execution_time_critical: 600
+          success_rate_warning: 0.9
+          success_rate_critical: 0.8
+      
+      transkriptor:
+        metrics:
+          - "files_processed"
+          - "processing_time_per_mb"
+          - "speaker_detection_accuracy"
+          - "output_file_size"
+        thresholds:
+          processing_time_warning: 30
+          processing_time_critical: 60
+          accuracy_warning: 0.95
+          accuracy_critical: 0.9
+      
+      validator:
+        metrics:
+          - "files_validated"
+          - "validation_errors_found"
+          - "validation_time"
+          - "false_positive_rate"
+        thresholds:
+          validation_time_warning: 10
+          validation_time_critical: 30
+          error_rate_warning: 0.1
+          error_rate_critical: 0.2
+      
+      intent-mapper:
+        metrics:
+          - "turns_processed"
+          - "intents_mapped"
+          - "unmapped_rate"
+          - "average_confidence"
+        thresholds:
+          unmapped_rate_warning: 0.3
+          unmapped_rate_critical: 0.5
+          confidence_warning: 0.7
+          confidence_critical: 0.6
+
+  # Docker metrics
+  docker_metrics:
+    enabled: true
+    collect_container_stats: true
+    collect_image_info: true
+    collect_network_stats: false
+    
+    containers:
+      - "roo-agent-buddy"
+      - "llama-cpp-server"
+    
+    thresholds:
+      container_cpu_warning: 80
+      container_cpu_critical: 95
+      container_memory_warning: 85
+      container_memory_critical: 95
+      container_restart_warning: 3
+      container_restart_critical: 5
+
+  # Application metrics
+  application_metrics:
+    enabled: true
+    track_api_requests: true
+    track_file_operations: true
+    track_vocabulary_changes: true
+    
+    api_endpoints:
+      - "/health"
+      - "/status"
+      - "/metrics"
+    
+    thresholds:
+      api_response_time_warning: 1000
+      api_response_time_critical: 5000
+      api_error_rate_warning: 0.05
+      api_error_rate_critical: 0.1
+
+# Alerting configuration
+alerting:
+  enabled: true
+  notification_channels:
+    - type: "log"
+      level: "WARNING"
+      enabled: true
+    - type: "file"
+      path: "data/monitoring/alerts.log"
+      enabled: true
+    - type: "webhook"
+      url: "http://localhost:8080/alerts"
+      enabled: false
+  
+  alert_rules:
+    - name: "high_cpu_usage"
+      condition: "system.cpu_usage > 90"
+      severity: "critical"
+      duration_seconds: 60
+      message: "System CPU usage is critically high"
+    
+    - name: "high_memory_usage"
+      condition: "system.memory_usage > 95"
+      severity: "critical"
+      duration_seconds: 30
+      message: "System memory usage is critically high"
+    
+    - name: "workflow_execution_slow"
+      condition: "buddy.average_execution_time > 600"
+      severity: "warning"
+      duration_seconds: 120
+      message: "Workflow execution is slower than expected"
+    
+    - name: "high_validation_error_rate"
+      condition: "validator.error_rate > 0.2"
+      severity: "warning"
+      duration_seconds: 300
+      message: "Validation error rate is higher than normal"
+    
+    - name: "container_restart_frequent"
+      condition: "docker.container_restarts > 3"
+      severity: "critical"
+      duration_seconds: 600
+      message: "Container is restarting frequently"
+
+# Health checks
+health_checks:
+  enabled: true
+  check_interval_seconds: 60
+  timeout_seconds: 30
+  
+  checks:
+    - name: "system_health"
+      type: "system"
+      enabled: true
+      checks:
+        - "cpu_usage < 95"
+        - "memory_usage < 95"
+        - "disk_usage < 95"
+    
+    - name: "docker_health"
+      type: "docker"
+      enabled: true
+      checks:
+        - "all_containers_running"
+        - "no_failed_containers"
+        - "container_health_ok"
+    
+    - name: "application_health"
+      type: "application"
+      enabled: true
+      checks:
+        - "api_responsive"
+        - "vocabulary_accessible"
+        - "data_directories_writable"
+    
+    - name: "agent_health"
+      type: "agents"
+      enabled: true
+      checks:
+        - "all_modes_available"
+        - "workflows_executable"
+        - "no_critical_errors"
+
+# Dashboard configuration
+dashboard:
+  enabled: true
+  port: 8081
+  refresh_interval_seconds: 30
+  
+  panels:
+    - name: "System Overview"
+      type: "overview"
+      metrics:
+        - "system.cpu_usage"
+        - "system.memory_usage"
+        - "system.disk_usage"
+        - "docker.container_count"
+    
+    - name: "Agent Performance"
+      type: "agents"
+      metrics:
+        - "buddy.workflows_executed"
+        - "transkriptor.files_processed"
+        - "validator.files_validated"
+        - "intent-mapper.turns_processed"
+    
+    - name: "Error Tracking"
+      type: "errors"
+      metrics:
+        - "system.error_count"
+        - "agent.error_rate"
+        - "docker.failed_containers"
+        - "api.error_rate"
+    
+    - name: "Performance Trends"
+      type: "trends"
+      time_range: "24h"
+      metrics:
+        - "buddy.average_execution_time"
+        - "transkriptor.processing_time_per_mb"
+        - "validator.validation_time"
+        - "intent-mapper.average_confidence"
+
+# Data retention
+data_retention:
+  metrics_retention_days: 30
+  logs_retention_days: 7
+  alerts_retention_days: 90
+  health_checks_retention_days: 14
+  
+  cleanup_schedule: "daily"
+  cleanup_time: "02:00"
+  
+  compression:
+    enabled: true
+    compress_after_days: 7
+    compression_level: 6
+
+# Export configuration
+export:
+  enabled: false
+  formats: ["json", "csv", "prometheus"]
+  schedule: "hourly"
+  destination: "data/monitoring/exports"
+  
+  prometheus:
+    enabled: false
+    port: 9090
+    metrics_path: "/metrics"
+    
+  json_export:
+    enabled: true
+    include_metadata: true
+    pretty_print: true
+  
+  csv_export:
+    enabled: false
+    include_headers: true
+    delimiter: ","

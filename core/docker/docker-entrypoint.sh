@@ -62,7 +62,7 @@ check_configuration() {
     
     local config_files=(
         "core/config/llm.config.yaml"
-        "buddy.yaml"
+        "core/config/buddy.yaml"
         "requirements.txt"
     )
     

@@ -1,0 +1,320 @@
+# RooCode Agent Specification - Buddy
+# Detailed specification for workflow orchestration agent
+# Version: 1.0
+# Created: 2025-06-29
+
+specification:
+  agent_name: "buddy"
+  version: "1.0.0"
+  description: "Central orchestration agent for coordinating multi-agent workflows and process management"
+  
+  # Input specifications
+  input_requirements:
+    workflow_definitions:
+      file_path: "core/modes/buddy/buddy-flows.yaml"
+      description: "Workflow definitions and orchestration rules"
+      required_structure: "flows_array"
+      validation_required: true
+    
+    user_requests:
+      formats:
+        - "workflow_id"
+        - "file_path"
+        - "batch_request"
+      validation_required: true
+    
+    file_constraints:
+      max_workflow_file_size_mb: 5
+      max_input_files_per_batch: 100
+      encoding: "utf-8"
+
+  # Workflow specifications
+  workflow_requirements:
+    structure:
+      required_fields:
+        - name: "flows"
+          type: "array"
+          items: "flow_object"
+    
+    flow_object:
+      required_fields:
+        - name: "id"
+          type: "string"
+          pattern: "^[a-z][a-z0-9_]*$"
+        - name: "label"
+          type: "string"
+          min_length: 1
+        - name: "description"
+          type: "string"
+          min_length: 1
+        - name: "steps"
+          type: "array"
+          items: "string"
+          min_items: 1
+        - name: "input"
+          type: "object"
+          description: "Input configuration"
+    
+    validation_rules:
+      unique_flow_ids: true
+      valid_step_references: true
+      no_circular_dependencies: true
+      all_steps_available: true
+
+  # Orchestration specifications
+  orchestration_workflow:
+    execution_model: "sequential"
+    error_handling: "fail_fast"
+    logging: "comprehensive"
+    monitoring: "real_time"
+    
+    steps:
+      1: "validate_request"
+      2: "load_workflow_definition"
+      3: "validate_workflow"
+      4: "prepare_execution_environment"
+      5: "execute_workflow_steps"
+      6: "monitor_step_execution"
+      7: "handle_step_results"
+      8: "generate_execution_report"
+      9: "cleanup_resources"
+    
+    step_execution:
+      timeout_seconds: 600
+      retry_attempts: 0
+      parallel_execution: false
+      resource_isolation: true
+
+  # Agent coordination specifications
+  agent_management:
+    discovery:
+      method: "configuration_based"
+      source: "core/modes/"
+      validation: "mode_file_presence"
+    
+    communication:
+      protocol: "file_based"
+      input_directories: "data/input"
+      output_directories: "data/output"
+      status_tracking: "execution_logs"
+    
+    lifecycle:
+      initialization: "on_demand"
+      cleanup: "automatic"
+      resource_management: "isolated"
+    
+    validation:
+      mode_availability: true
+      configuration_validity: true
+      dependency_satisfaction: true
+
+  # Execution specifications
+  execution_rules:
+    workflow_execution:
+      sequential_steps: true
+      no_parallel_agents: true
+      deterministic_order: true
+      complete_before_next: true
+    
+    file_management:
+      input_validation: true
+      output_verification: true
+      intermediate_cleanup: false
+      backup_creation: true
+    
+    error_propagation:
+      fail_fast: true
+      detailed_logging: true
+      context_preservation: true
+      recovery_impossible: true
+
+  # Output specifications
+  output_requirements:
+    execution_log:
+      file_format: "yaml"
+      naming_pattern: "core/history/{timestamp}.runlog.yaml"
+      encoding: "utf-8"
+      
+      structure:
+        type: "object"
+        required_fields:
+          - name: "execution_id"
+            type: "string"
+            format: "uuid"
+          - name: "workflow_id"
+            type: "string"
+          - name: "started_at"
+            type: "string"
+            format: "iso8601"
+          - name: "completed_at"
+            type: "string"
+            format: "iso8601"
+            nullable: true
+          - name: "status"
+            type: "string"
+            allowed_values: ["running", "completed", "failed", "cancelled"]
+          - name: "steps"
+            type: "array"
+            items: "step_execution_object"
+          - name: "summary"
+            type: "object"
+            description: "Execution summary and statistics"
+    
+    step_execution_object:
+      required_fields:
+        - name: "step_name"
+          type: "string"
+        - name: "agent"
+          type: "string"
+        - name: "started_at"
+          type: "string"
+          format: "iso8601"
+        - name: "completed_at"
+          type: "string"
+          format: "iso8601"
+          nullable: true
+        - name: "status"
+          type: "string"
+          allowed_values: ["pending", "running", "completed", "failed"]
+        - name: "input_files"
+          type: "array"
+          items: "string"
+        - name: "output_files"
+          type: "array"
+          items: "string"
+        - name: "error_message"
+          type: "string"
+          nullable: true
+
+  # Quality assurance
+  validation_criteria:
+    orchestration_accuracy:
+      - "All workflow steps executed in correct order"
+      - "No steps skipped or duplicated"
+      - "Agent coordination functions correctly"
+      - "File handoffs between agents successful"
+    
+    error_handling:
+      - "Failures detected and reported accurately"
+      - "Execution stops on first failure"
+      - "Error context preserved and logged"
+      - "No partial or corrupted results"
+    
+    logging_completeness:
+      - "All execution steps logged"
+      - "Timing information accurate"
+      - "File paths and status recorded"
+      - "Error details captured completely"
+
+  # Performance specifications
+  performance_requirements:
+    orchestration_overhead:
+      max_seconds_per_step: 10
+      max_total_overhead: 60
+    
+    resource_usage:
+      max_concurrent_workflows: 1
+      max_memory_mb: 200
+      file_handle_limit: 100
+    
+    scalability:
+      max_workflow_steps: 20
+      max_files_per_workflow: 1000
+      batch_processing: false
+
+  # Integration specifications
+  integration_points:
+    workflow_sources:
+      - "core/modes/buddy/buddy-flows.yaml"
+    
+    agent_modes:
+      - "transkriptor"
+      - "validator"
+      - "intent-mapper"
+      - "intent-discovery"
+      - "vocab-updater"
+    
+    data_directories:
+      - "data/input"
+      - "data/output"
+      - "data/transcripts"
+      - "data/mappings"
+      - "data/validation"
+    
+    logging_destinations:
+      - "core/history/{timestamp}.runlog.yaml"
+    
+    dependencies:
+      required: ["buddy-flows.yaml"]
+      optional: ["llm-admin"]
+
+  # Configuration parameters
+  configuration:
+    execution:
+      timeout_seconds: 600
+      retry_enabled: false
+      parallel_execution: false
+      cleanup_on_failure: true
+    
+    logging:
+      level: "INFO"
+      include_file_details: true
+      include_timing: true
+      include_agent_output: false
+    
+    monitoring:
+      real_time_status: true
+      progress_reporting: true
+      resource_monitoring: true
+
+  # Monitoring and logging
+  monitoring:
+    metrics:
+      - "workflows_executed_count"
+      - "successful_workflows_count"
+      - "failed_workflows_count"
+      - "average_execution_time_seconds"
+      - "steps_executed_count"
+    
+    logging:
+      level: "INFO"
+      include_workflow_details: true
+      include_step_timing: true
+    
+    alerts:
+      - condition: "execution_time > 600s"
+        action: "log_warning"
+      - condition: "failure_rate > 0.1"
+        action: "log_error"
+
+  # Testing specifications
+  testing:
+    unit_tests:
+      - "test_workflow_loading"
+      - "test_workflow_validation"
+      - "test_step_execution"
+      - "test_error_handling"
+      - "test_logging"
+    
+    integration_tests:
+      - "test_multi_agent_workflow"
+      - "test_file_processing_pipeline"
+      - "test_error_propagation"
+    
+    test_data:
+      workflows:
+        - "simple_workflow.yaml"
+        - "complex_workflow.yaml"
+        - "error_workflow.yaml"
+      
+      test_files:
+        - "sample_input.chat.json"
+        - "large_input.chat.json"
+        - "invalid_input.json"
+
+# Compliance validation
+compliance:
+  roocode_standards: true
+  template_conformity: true
+  ci_validation: true
+  documentation_complete: true

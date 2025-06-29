@@ -1,0 +1,81 @@
+# RooCode Mode Definition - Vocab Updater
+# Aktualisierung des zentralen Vokabulars mit kuratierten Vorschlägen
+
+slug: "vocab-updater"
+agent: "vocab-updater"
+description: "Verarbeitet kuratierte Intent-Vorschläge und aktualisiert das zentrale Vokabular"
+version: "1.0.0"
+
+model_source:
+  type: "local"
+  reference: "modules/llm-admin/config/active.yaml"
+
+tools:
+  - name: "load_suggestions"
+    type: "suggestion_processing"
+    config:
+      validate_format: true
+      check_approval_status: true
+      verify_uniqueness: true
+  
+  - name: "update_vocabulary"
+    type: "vocabulary_management"
+    config:
+      preserve_existing: true
+      alphabetical_sorting: true
+      validation_required: true
+  
+  - name: "update_history"
+    type: "history_management"
+    config:
+      append_only: true
+      chronological_order: true
+      full_audit_trail: true
+
+input_constraints:
+  file_types:
+    - "yaml"
+  max_file_size_mb: 5
+  encoding: "utf-8"
+  approval_required: true
+
+output_target:
+  primary: "core/vocab/vocab.yaml"
+  history: "core/vocab/vocab.history.yaml"
+  backup_enabled: true
+
+processing_rules:
+  approved_only: true
+  no_existing_modifications: true
+  no_deletions: true
+  no_duplicates: true
+  preserve_order: true
+
+vocabulary_update:
+  required_fields:
+    - "id"
+    - "label"
+    - "description"
+    - "created_on"
+    - "origin"
+  auto_generated_fields:
+    - "added_on"
+    - "added_by"
+  validation_against_existing: true
+
+history_update:
+  required_fields:
+    - "id"
+    - "label"
+    - "created_on"
+    - "added_by"
+    - "origin"
+    - "comment"
+  append_only: true
+  chronological_sorting: true
+
+validation_requirements:
+  yaml_conformity: true
+  template_compliance: true
+  consistency_check: true
+  backup_verification: true

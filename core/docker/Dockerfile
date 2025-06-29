@@ -24,7 +24,7 @@ RUN mkdir -p /project/logs \
     /project/data
 
 # Copy requirements first for better Docker layer caching
-COPY requirements.txt pyproject.toml ./
+COPY core/config/requirements.txt core/config/pyproject.toml ./
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
@@ -33,19 +33,14 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # Copy project structure
 COPY core/ ./core/
 COPY modules/ ./modules/
-COPY pim/ ./pim/
-COPY buddy.yaml ./
-COPY bootstrap.sh ./
 COPY README.md LICENSE ./
 
 # Copy Docker-specific files
 COPY core/docker/entrypoint.sh ./
 COPY core/docker/docker-entrypoint.sh ./
-COPY start.sh ./
-COPY core/docker/.env.docker ./
 
 # Make scripts executable
-RUN chmod +x entrypoint.sh docker-entrypoint.sh start.sh bootstrap.sh
+RUN chmod +x entrypoint.sh docker-entrypoint.sh
 
 # Create non-root user for security
 RUN useradd -m -u 1000 roocode && \

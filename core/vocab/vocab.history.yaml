@@ -1,0 +1,50 @@
+# Vocabulary Change History for RooCode Project
+# Documents all vocabulary extensions in chronological order
+# Format: YAML list with chronologically sorted entries (oldest first)
+# Version: 1.0
+# Created: 2025-06-28
+
+# Each history entry structure:
+# - id: exactly as in vocab.yaml
+# - label: consistent with vocab.yaml
+# - created_on: ISO 8601 timestamp
+# - added_by: name of agent, tool, or user (e.g., vocab-updater)
+# - origin: suggestion file or manual source
+# - comment: optional additional context
+
+history:
+  - id: "inform.question"
+    label: "Information Request"
+    created_on: "2025-06-28T00:00:00Z"
+    added_by: "manual"
+    origin: "initial_setup"
+    comment: "Initial vocabulary entry during system setup"
+    
+  - id: "confirm.approval"
+    label: "Confirmation Request"
+    created_on: "2025-06-28T00:00:00Z"
+    added_by: "manual"
+    origin: "initial_setup"
+    comment: "Initial vocabulary entry during system setup"
+    
+  - id: "task.execute"
+    label: "Task Execution Request"
+    created_on: "2025-06-28T00:00:00Z"
+    added_by: "manual"
+    origin: "initial_setup"
+    comment: "Initial vocabulary entry during system setup"
+    
+  - id: "system.status"
+    label: "System Status Inquiry"
+    created_on: "2025-06-28T00:00:00Z"
+    added_by: "manual"
+    origin: "initial_setup"
+    comment: "Initial vocabulary entry during system setup"
+
+# Validation rules:
+# - History is immutable - new entries only through append
+# - No changes, deletions, or overwrites of existing entries
+# - Each ID from vocab.yaml must appear exactly once in history
+# - All timestamps must be valid ISO strings
+# - No duplicates, no missing fields, no free text in required fields
+# - CI can automatically verify consistency with vocab.yaml
